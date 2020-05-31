@@ -3,7 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include <ctype.h>
-#include "libs/itree.h"
+#include "itree.h"
 
 #define MAX_STDIN 25
 
