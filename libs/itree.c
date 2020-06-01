@@ -23,9 +23,6 @@ void itree_destruir(ITree it) {
 int itree_altura(ITree it) {
     if (it == NULL)
         return -1;
-    // TODO: No hace falta esta condición?
-    // if (btree_empty(arbol->left) && btree_empty(arbol->right))
-    // return 0;
     return (1 + max_i(itree_altura(it->left), itree_altura(it->right)));
 }
 
