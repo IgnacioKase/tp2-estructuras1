@@ -88,7 +88,6 @@ ITree itree_rotar_der(ITree it) {
 }
 
 ITree itree_rotar_izq(ITree it) {
-    print2D(it);
     ITree right = it->right;
     ITree rl = right->left;
 
