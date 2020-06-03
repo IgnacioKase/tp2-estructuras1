@@ -67,7 +67,7 @@ ITree itree_insertar(ITree it, double inter[2]) {
         it->left = itree_insertar(it->left, inter);
         it->max = max_d(it->max, it->left->max);
         // TODO:inter[0] > it->intervalo[0] || inter[1] != it->intervalo[1], no deberia ser un &&?
-    } else if (inter[0] > it->intervalo[0] && inter[1] != it->intervalo[1]) {
+    } else if (inter[0] > it->intervalo[0] || inter[1] != it->intervalo[1]) {
         it->right = itree_insertar(it->right, inter);
         it->max = max_d(it->max, it->right->max);
     } else {
