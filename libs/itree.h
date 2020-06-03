@@ -16,9 +16,9 @@ typedef struct _ITNodo {
 } ITNodo;
 
 typedef enum {
-    BTREE_RECORRIDO_IN,
-    BTREE_RECORRIDO_PRE,
-    BTREE_RECORRIDO_POST
+    ITREE_RECORRIDO_IN,
+    ITREE_RECORRIDO_PRE,
+    ITREE_RECORRIDO_POST
 } ITreeOrdenDeRecorrido;
 
 typedef ITNodo *ITree;
