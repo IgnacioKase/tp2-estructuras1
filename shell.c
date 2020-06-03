@@ -76,7 +76,7 @@ int main() {
                         puts("");
                         break;
                     case 2:
-                        itree_recorrer_bfs(itree, BTREE_RECORRIDO_PRE, imprimir_intervalo);
+                        itree_recorrer_bfs(itree, imprimir_intervalo);
                         puts("");
                         break;
                     case 3:

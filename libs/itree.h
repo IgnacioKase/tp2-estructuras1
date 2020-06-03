@@ -35,7 +35,7 @@ ITree itree_intersecar(ITree it, double inter[2]);
 
 void itree_recorrer_dfs(ITree it, ITreeOrdenDeRecorrido orden, FuncionVisitante visit);
 
-void itree_recorrer_bfs(ITree it, ITreeOrdenDeRecorrido orden, FuncionVisitante visit);
+void itree_recorrer_bfs(ITree it, FuncionVisitante visit);
 
 int itree_altura(ITree it);
 

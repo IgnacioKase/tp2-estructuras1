@@ -261,7 +261,7 @@ void itree_recorrer_dfs(ITree arbol, ITreeOrdenDeRecorrido orden, FuncionVisitan
     }
 }
 
-void itree_recorrer_bfs(ITree it, ITreeOrdenDeRecorrido orden, FuncionVisitante visit) {
+void itree_recorrer_bfs(ITree it, FuncionVisitante visit) {
     if (it == NULL)
         return;
     Cola cola = cola_crear();
@@ -269,27 +269,11 @@ void itree_recorrer_bfs(ITree it, ITreeOrdenDeRecorrido orden, FuncionVisitante 
     cola = cola_encolar(cola, (void *)it);
     for (; cola != NULL; cola = cola_desencolar(cola)) {
         nodo = (ITree)cola_primero(cola);
-        if (orden == BTREE_RECORRIDO_IN) {
-            if (nodo->left != NULL)
-                cola = cola_encolar(cola, (void *)nodo->left);
-            visit(nodo->intervalo);
-            if (nodo->right != NULL)
-                cola = cola_encolar(cola, (void *)nodo->right);
-        }
-        if (orden == BTREE_RECORRIDO_PRE) {
-            visit(nodo->intervalo);
-            if (nodo->left != NULL)
-                cola = cola_encolar(cola, (void *)nodo->left);
-            if (nodo->right != NULL)
-                cola = cola_encolar(cola, (void *)nodo->right);
-        }
-        if (orden == BTREE_RECORRIDO_POST) {
-            if (nodo->left != NULL)
-                cola = cola_encolar(cola, (void *)nodo->left);
-            if (nodo->right != NULL)
-                cola = cola_encolar(cola, (void *)nodo->right);
-            visit(nodo->intervalo);
-        }
+        visit(nodo->intervalo);
+        if (nodo->left != NULL)
+            cola = cola_encolar(cola, (void *)nodo->left);
+        if (nodo->right != NULL)
+            cola = cola_encolar(cola, (void *)nodo->right);
     }
     cola_destruir(cola);
     free(nodo);
