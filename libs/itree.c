@@ -1,5 +1,53 @@
 #include "itree.h"
 
+int itree_balance(ITree N) {
+    if (N == NULL)
+        return 0;
+    return itree_altura(N->left) - itree_altura(N->right);
+}
+
+#define COUNT 5
+// Function to print binary tree in 2D
+// It does reverse inorder traversal
+void print2DUtil(ITree root, int space) {
+    // Base case
+    if (root == NULL)
+        return;
+
+    // Increase distance between levels
+    space += COUNT;
+
+    // Process right child first
+    print2DUtil(root->right, space);
+
+    // Print current node after space
+    // count
+    printf("\n");
+    for (int i = COUNT; i < space; i++)
+        printf(" ");
+    printf("[%.2f, %.2f] H: %d\n", root->intervalo[0], root->intervalo[1], itree_balance(root));
+
+    // Process left child
+    print2DUtil(root->left, space);
+}
+
+// Wrapper over print2DUtil()
+void print2D(ITree root) {
+    // Pass initial space count as 0
+    print2DUtil(root, 0);
+}
+
+ITree insert_in_tree(ITree it, double a, double b) {
+    double *ar = malloc(sizeof(double) * 2);
+    ar[0] = a;
+    ar[1] = b;
+    printf("########\n");
+    print2D(it);
+    printf("########\n");
+    return itree_insertar(it, ar);
+}
+///////////////////////////////////////////
+
 int max_i(int a, int b) {
     return a > b ? a : b;
 }
@@ -40,6 +88,7 @@ ITree itree_rotar_der(ITree it) {
 }
 
 ITree itree_rotar_izq(ITree it) {
+    print2D(it);
     ITree right = it->right;
     ITree rl = right->left;
 
@@ -50,6 +99,10 @@ ITree itree_rotar_izq(ITree it) {
     right->max = max_d(right->max, it->max);
 
     return right;
+}
+
+int min_range(double x[2], double y[2]) {
+    return x[0] < y[0] || (x[0] == y[0] && x[1] < y[1]);
 }
 
 ITree itree_insertar(ITree it, double inter[2]) {
@@ -63,26 +116,34 @@ ITree itree_insertar(ITree it, double inter[2]) {
         return nodo;
     }
 
-    if (inter[0] < it->intervalo[0]) {
+    if (min_range(inter, it->intervalo)) {
         it->left = itree_insertar(it->left, inter);
         it->max = max_d(it->max, it->left->max);
-        // TODO:inter[0] > it->intervalo[0] || inter[1] != it->intervalo[1], no deberia ser un &&?
-    } else if (inter[0] > it->intervalo[0] || inter[1] != it->intervalo[1]) {
+    } else if (min_range(it->intervalo, inter)) {
         it->right = itree_insertar(it->right, inter);
         it->max = max_d(it->max, it->right->max);
-    } else {
+    } else  // Equal keys are not allowed in BST
         return it;
+
+    int balance = itree_balance(it);
+
+    // Left Left Case
+    if (balance > 1 && min_range(inter, it->left->intervalo))
+        return itree_rotar_der(it);
+
+    // Right Right Case
+    if (balance < -1 && min_range(it->right->intervalo, inter))
+        return itree_rotar_izq(it);
+
+    // Left Right Case
+    if (balance > 1 && min_range(it->left->intervalo, inter)) {
+        it->left = itree_rotar_izq(it->left);
+        return itree_rotar_der(it);
     }
 
-    int dif = itree_altura(it->left) - itree_altura(it->right);
-
-    if (dif > 1) {
-        if (inter[0] >= it->left->intervalo[0])
-            it->left = itree_rotar_izq(it->left);
-        return itree_rotar_der(it);
-    } else if (dif < -1) {
-        if (inter[0] < it->right->intervalo[0])
-            it->right = itree_rotar_der(it->right);
+    // Right Left Case
+    if (balance < -1 && min_range(inter, it->right->intervalo)) {
+        it->right = itree_rotar_der(it->right);
         return itree_rotar_izq(it);
     }
 
@@ -128,17 +189,32 @@ ITree itree_eliminar(ITree it, double inter[2]) {
     if (it == NULL)
         return it;
 
-    int dif = itree_altura(it->left) - itree_altura(it->right);
+    // STEP 3: GET THE BALANCE FACTOR OF THIS NODE (to
+    // check whether this node became unbalanced)
+    int balance = itree_balance(it);
 
-    if (dif > 1) {
-        if (itree_altura(it->left->left) - itree_altura(it->left->right) < 0)
-            it->left = itree_rotar_izq(it->left);
+    // If this node becomes unbalanced, then there are 4 cases
+
+    // Left Left Case
+    if (balance > 1 && itree_balance(it->left) >= 0)
         return itree_rotar_der(it);
-    } else if (dif < -1) {
-        if (itree_altura(it->right->left) - itree_altura(it->right->right) > 0)
-            it->right = itree_rotar_der(it->right);
+
+    // Left Right Case
+    if (balance > 1 && itree_balance(it->left) < 0) {
+        it->left = itree_rotar_izq(it->left);
+        return itree_rotar_der(it);
+    }
+
+    // Right Right Case
+    if (balance < -1 && itree_balance(it->right) <= 0)
+        return itree_rotar_izq(it);
+
+    // Right Left Case
+    if (balance < -1 && itree_balance(it->right) > 0) {
+        it->right = itree_rotar_der(it->right);
         return itree_rotar_izq(it);
     }
+
     return it;
 }
 

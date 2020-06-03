@@ -39,4 +39,11 @@ void itree_recorrer_bfs(ITree it, ITreeOrdenDeRecorrido orden, FuncionVisitante 
 
 int itree_altura(ITree it);
 
+/////////
+int getBalance(ITree N);
+void print2DUtil(ITree root, int space);
+void print2D(ITree root);
+ITree insert_in_tree(ITree it, double a, double b);
+///////////////
+
 #endif
