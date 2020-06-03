@@ -244,17 +244,17 @@ ITree itree_intersecar(ITree it, double inter[2]) {
 void itree_recorrer_dfs(ITree arbol, ITreeOrdenDeRecorrido orden, FuncionVisitante visit) {
     if (arbol == NULL)
         return;
-    if (orden == BTREE_RECORRIDO_IN) {
+    if (orden == ITREE_RECORRIDO_IN) {
         itree_recorrer_dfs(arbol->left, orden, visit);
         visit(arbol->intervalo);
         itree_recorrer_dfs(arbol->right, orden, visit);
     }
-    if (orden == BTREE_RECORRIDO_PRE) {
+    if (orden == ITREE_RECORRIDO_PRE) {
         visit(arbol->intervalo);
         itree_recorrer_dfs(arbol->left, orden, visit);
         itree_recorrer_dfs(arbol->right, orden, visit);
     }
-    if (orden == BTREE_RECORRIDO_POST) {
+    if (orden == ITREE_RECORRIDO_POST) {
         itree_recorrer_dfs(arbol->left, orden, visit);
         itree_recorrer_dfs(arbol->right, orden, visit);
         visit(arbol->intervalo);
@@ -276,5 +276,4 @@ void itree_recorrer_bfs(ITree it, FuncionVisitante visit) {
             cola = cola_encolar(cola, (void *)nodo->right);
     }
     cola_destruir(cola);
-    free(nodo);
 }
