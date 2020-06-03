@@ -72,7 +72,7 @@ int main() {
             case 1:
                 switch (match(comando)) {
                     case 1:
-                        itree_recorrer_dfs(itree, BTREE_RECORRIDO_PRE, imprimir_intervalo);
+                        itree_recorrer_dfs(itree, ITREE_RECORRIDO_IN, imprimir_intervalo);
                         puts("");
                         break;
                     case 2:
