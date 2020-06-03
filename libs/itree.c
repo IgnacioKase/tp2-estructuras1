@@ -23,9 +23,6 @@ void itree_destruir(ITree it) {
 int itree_altura(ITree it) {
     if (it == NULL)
         return -1;
-    // TODO: No hace falta esta condición?
-    // if (btree_empty(arbol->left) && btree_empty(arbol->right))
-    // return 0;
     return (1 + max_i(itree_altura(it->left), itree_altura(it->right)));
 }
 
@@ -69,7 +66,8 @@ ITree itree_insertar(ITree it, double inter[2]) {
     if (inter[0] < it->intervalo[0]) {
         it->left = itree_insertar(it->left, inter);
         it->max = max_d(it->max, it->left->max);
-    } else if (inter[0] > it->intervalo[0] || inter[1] != it->intervalo[1]) {
+        // TODO:inter[0] > it->intervalo[0] || inter[1] != it->intervalo[1], no deberia ser un &&?
+    } else if (inter[0] > it->intervalo[0] && inter[1] != it->intervalo[1]) {
         it->right = itree_insertar(it->right, inter);
         it->max = max_d(it->max, it->right->max);
     } else {
@@ -193,28 +191,28 @@ void itree_recorrer_bfs(ITree it, ITreeOrdenDeRecorrido orden, FuncionVisitante 
         return;
     Cola cola = cola_crear();
     ITree nodo;
-    cola = cola_encolar(cola, (void*)it);
+    cola = cola_encolar(cola, (void *)it);
     for (; cola != NULL; cola = cola_desencolar(cola)) {
         nodo = (ITree)cola_primero(cola);
         if (orden == BTREE_RECORRIDO_IN) {
             if (nodo->left != NULL)
-                cola = cola_encolar(cola, (void*)nodo->left);
+                cola = cola_encolar(cola, (void *)nodo->left);
             visit(nodo->intervalo);
             if (nodo->right != NULL)
-                cola = cola_encolar(cola, (void*)nodo->right);
+                cola = cola_encolar(cola, (void *)nodo->right);
         }
         if (orden == BTREE_RECORRIDO_PRE) {
             visit(nodo->intervalo);
             if (nodo->left != NULL)
-                cola = cola_encolar(cola, (void*)nodo->left);
+                cola = cola_encolar(cola, (void *)nodo->left);
             if (nodo->right != NULL)
-                cola = cola_encolar(cola, (void*)nodo->right);
+                cola = cola_encolar(cola, (void *)nodo->right);
         }
         if (orden == BTREE_RECORRIDO_POST) {
             if (nodo->left != NULL)
-                cola = cola_encolar(cola, (void*)nodo->left);
+                cola = cola_encolar(cola, (void *)nodo->left);
             if (nodo->right != NULL)
-                cola = cola_encolar(cola, (void*)nodo->right);
+                cola = cola_encolar(cola, (void *)nodo->right);
             visit(nodo->intervalo);
         }
     }
