@@ -12,16 +12,14 @@ static void imprimir_intervalo(double* intervalo) {
     printf("[%.2f, %.2f] ", intervalo[0], intervalo[1]);
 }
 
-int menor(int a, int b) {
-    return a < b;
-}
-
 void empty_stdin() {
     int c = getchar();
     while (c != '\n' && c != EOF)
         c = getchar();
 }
 
+/* Funcion auxiliar para switch sobre los comandos
+de longitud mayor a 1 */
 int match(char* comando) {
     if (!strcmp(comando, "dfs"))
         return 1;
@@ -34,6 +32,7 @@ int match(char* comando) {
     return 0;
 }
 
+// Informacion sobre los comandos posibles
 void help() {
     printf("\nComandos:\n");
     printf("i [a,b]: inserta el intervalo [a,b] en el arbol\n");
@@ -45,6 +44,7 @@ void help() {
     printf("bfs: imprime los intervalos del arbol ");
     printf("con recorrido primero a lo ancho\n");
     printf("salir: destruye el arbol y termina el programa\n\n");
+    printf("Recuerde que los intervalos deben contener numeros\n\n");
 }
 
 int main() {
@@ -60,16 +60,23 @@ int main() {
 
         printf(">> ");
 
-        // [^\n] indica "leer hasta encontrar..."
+        // [^\n] indica "leer hasta encontrar \n (sin incluirlo)"
         scanf("%[^\n]s", buf);
-        // Limpiamos el buffer para le proxima entrada
-        empty_stdin();
 
         int args = sscanf(buf, "%s [%lf, %lf]", comando, arg, &arg[1]);
-        //args = cant de elementos escaneados
+        // args = cant de elementos escaneados
+
+        // Limpiamos el buffer para la proxima entrada
+        empty_stdin();
 
         switch (args) {
+            /* Se debe recibir 1 comando y para algunos casos
+            2 numeros correspondientes al intervalo,
+            por lo tanto debe haber 1 o 3 argumentos */
             case 1:
+                /* los comandos que no reciben intervalo tienen varios
+                caracteres y por lo tanto se llama a una funcion para
+                comparar el recibido con los posibles */
                 switch (match(comando)) {
                     case 1:
                         itree_recorrer_dfs(itree, ITREE_RECORRIDO_IN, imprimir_intervalo);
@@ -93,7 +100,10 @@ int main() {
                 }
                 break;
             case 3:
-                if (strlen(comando) == 1) {
+                /* los comandos que reciben intervalo tienen 1 caracter
+                y se debe chequear que el intervalo sea valido
+                (que el final no sea menor al comienzo) */
+                if (strlen(comando) == 1 && arg[0] <= arg[1]) {
                     switch (comando[0]) {
                         case 'i':
                             itree = itree_insertar(itree, arg);
@@ -102,10 +112,10 @@ int main() {
                             itree = itree_eliminar(itree, arg);
                             break;
                         case '?':
-                            if (itree_intersecar(itree, arg) == NULL) {
-                                printf("No\n");
-                            } else {
+                            if (itree_intersecar(itree, arg)) {
                                 printf("Si\n");
+                            } else {
+                                printf("No\n");
                             }
                             break;
                         default:
@@ -113,6 +123,9 @@ int main() {
                             printf("Ingrese 'help' para informacion sobre los comandos.\n");
                             break;
                     }
+                } else if (arg[0] > arg[1]) {
+                    printf("ERROR: intervalo invalido.\n");
+                    printf("El extremo izquierdo no puede superar al derecho\n");
                 } else {
                     printf("ERROR: comando invalido.\n");
                     printf("Ingrese 'help' para informacion sobre los comandos.\n");
