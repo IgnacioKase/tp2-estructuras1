@@ -51,6 +51,7 @@ IntervalCommands match_interval_command(char comando) {
         return INTERSECAR;
     return -1;
 }
+
 // Informacion sobre los comandos posibles
 void help() {
     printf("\nComandos:\n");
@@ -117,11 +118,10 @@ ITree shell_interval_command(char comando[6], double* arg, ITree itree) {
             itree = itree_eliminar(itree, arg);
             break;
         case INTERSECAR:
-            if (itree_intersecar(itree, arg)) {
+            if (itree_intersecar(itree, arg))
                 printf("Si\n");
-            } else {
+            else
                 printf("No\n");
-            }
             break;
         default:
             printf("ERROR: comando invalido.\n");
