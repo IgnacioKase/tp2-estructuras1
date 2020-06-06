@@ -1,26 +1,4 @@
-#include <assert.h>
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "libs/intervalo.h"
-#include "libs/itree.h"
-
-#define MAX_STDIN 25
-
-typedef enum {
-    DFS,
-    BFS,
-    SALIR,
-    HELP
-} SimpleCommands;
-
-typedef enum {
-    INSERTAR,
-    ELIMINAR,
-    INTERSECAR
-} IntervalCommands;
+#include "shell.h"
 
 void empty_stdin() {
     int c = getchar();
@@ -131,45 +109,29 @@ ITree shell_interval_command(char comando[6], double* arg, ITree itree) {
     return itree;
 }
 
-int main() {
-    printf("\nIngrese 'help' para informacion sobre los comandos\n");
-
-    ITree itree = itree_crear();
+int loop_shell(char buf[MAX_STDIN], ITree* itree) {
     int continuar = 1;
-    char buf[MAX_STDIN];
     char comando[6];
     double arg[2];
     int args;
 
-    // Bucle de Shell
-    while (continuar) {
-        printf(">> ");
+    args = sscanf(buf, "%s [%lf, %lf]", comando, arg, &arg[1]);
+    // args = cant de elementos escaneados
 
-        // [^\n] indica "leer hasta encontrar \n (sin incluirlo)"
-        scanf("%[^\n]s", buf);
-
-        args = sscanf(buf, "%s [%lf, %lf]", comando, arg, &arg[1]);
-        // args = cant de elementos escaneados
-
-        // Limpiamos el buffer para la proxima entrada
-        empty_stdin();
-
-        switch (args) {
-            /* Se debe recibir 1 comando y para algunos casos
+    switch (args) {
+        /* Se debe recibir 1 comando y para algunos casos
             2 numeros correspondientes al intervalo,
             por lo tanto debe haber 1 o 3 argumentos */
-            case 1:
-                continuar = shell_simple_command(comando, itree);
-                break;
-            case 3:
-                itree = shell_interval_command(comando, arg, itree);
-                break;
-            default:
-                printf("ERROR: cantidad invalida de argumentos.\n");
-                printf("Ingrese 'help' para informacion sobre los comandos.\n");
-                break;
-        }
+        case 1:
+            continuar = shell_simple_command(comando, *itree);
+            break;
+        case 3:
+            *itree = shell_interval_command(comando, arg, *itree);
+            break;
+        default:
+            printf("ERROR: cantidad invalida de argumentos.\n");
+            printf("Ingrese 'help' para informacion sobre los comandos.\n");
+            break;
     }
-    itree_destruir(itree);
-    return 0;
+    return continuar;
 }
