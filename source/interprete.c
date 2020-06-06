@@ -6,8 +6,6 @@ int main() {
     ITree itree = itree_crear();
     int continuar = 1;
     char buf[MAX_STDIN];
-    char comando[6];
-    double arg[2];
     int args;
 
     // Bucle de Shell
