@@ -100,10 +100,6 @@ ITree itree_rotar_izq(ITree it) {
     return right;
 }
 
-int min_range(double x[2], double y[2]) {
-    return x[0] < y[0] || (x[0] == y[0] && x[1] < y[1]);
-}
-
 // Inserta un intervalo en un arbol
 ITree itree_insertar(ITree it, double inter[2]) {
     if (it == NULL) {
@@ -116,30 +112,30 @@ ITree itree_insertar(ITree it, double inter[2]) {
         return nodo;
     }
 
-    if (min_range(inter, it->intervalo)) {
+    if (intervalo_min(inter, it->intervalo)) {
         /* el intervalo se inserta a la izquierda si el comienzo es menor
         o si es igual pero el final es menor */
         it->left = itree_insertar(it->left, inter);
         it->max = max_d(it->max, it->left->max);
-    } else if (min_range(it->intervalo, inter)) {
+    } else if (intervalo_min(it->intervalo, inter)) {
         it->right = itree_insertar(it->right, inter);
         it->max = max_d(it->max, it->right->max);
-    } else // si el intervalo ya existe, no se vuelve a insertar
+    } else  // si el intervalo ya existe, no se vuelve a insertar
         return it;
 
     /* si se inserta en uno de los subarboles
     se debe asegurar que se mantenga el balance */
     int balance = itree_balance(it);
 
-    if (balance > 1) { // caso desbalanceado hacia la izquierda
-        if (min_range(it->left->intervalo, inter))
+    if (balance > 1) {  // caso desbalanceado hacia la izquierda
+        if (intervalo_min(it->left->intervalo, inter))
             /* si se inserto a la derecha del subarbol izquierdo
             primero se debe rotar este hacia la izquierda */
             it->left = itree_rotar_izq(it->left);
         return itree_rotar_der(it);
     }
-    if (balance < -1) { // caso desbalanceado hacia la derecha
-        if (min_range(inter, it->right->intervalo))
+    if (balance < -1) {  // caso desbalanceado hacia la derecha
+        if (intervalo_min(inter, it->right->intervalo))
             /* si se inserto a la izquierda del subarbol derecho
             primero se debe rotar este hacia la derecha */
             it->right = itree_rotar_der(it->right);
@@ -167,11 +163,11 @@ ITree itree_eliminar(ITree it, double inter[2]) {
     if (it == NULL)
         return it;
 
-    if (min_range(inter, it->intervalo)) {
+    if (intervalo_min(inter, it->intervalo)) {
         it->left = itree_eliminar(it->left, inter);
-    } else if (min_range(it->intervalo, inter)) {
+    } else if (intervalo_min(it->intervalo, inter)) {
         it->right = itree_eliminar(it->right, inter);
-    } else { // caso de eliminar intervalo actual
+    } else {  // caso de eliminar intervalo actual
         if (it->right == NULL) {
             /* si no hay subarbol derecho
             solo se necesita eliminar la raiz
@@ -186,7 +182,7 @@ ITree itree_eliminar(ITree it, double inter[2]) {
             ITree temp = it;
             it = it->right;
             free(temp);
-        } else { // caso de ningun subarbol vacio
+        } else {  // caso de ningun subarbol vacio
             // se reemplaza la raiz por el minimo intervalo derecho
             ITree nuevo = itree_minimo(it->right);
             it->intervalo[0] = nuevo->intervalo[0];
@@ -201,18 +197,18 @@ ITree itree_eliminar(ITree it, double inter[2]) {
         }
     }
 
-    if (it == NULL) // caso de haber eliminado el unico intervalo
+    if (it == NULL)  // caso de haber eliminado el unico intervalo
         return it;
 
     int balance = itree_balance(it);
 
-    if (balance > 1) { // caso desbalanceado a izquierda
+    if (balance > 1) {  // caso desbalanceado a izquierda
         if (itree_balance(it->left) < 0)
             it->left = itree_rotar_izq(it->left);
         return itree_rotar_der(it);
     }
 
-    if (balance < -1) { // caso desbalanceado a derecha
+    if (balance < -1) {  // caso desbalanceado a derecha
         if (itree_balance(it->right) > 0)
             it->right = itree_rotar_der(it->right);
         return itree_rotar_izq(it);
@@ -295,18 +291,18 @@ void itree_recorrer_dfs(ITree arbol, ITreeOrdenDeRecorrido orden, FuncionVisitan
 void itree_recorrer_bfs(ITree it, FuncionVisitante visit) {
     if (it == NULL)
         return;
-        // se utiliza una cola para guardar en orden nodos por visitar
+    // se utiliza una cola para guardar en orden nodos por visitar
     Cola cola = cola_crear();
     ITree nodo;
-    cola = cola_encolar(cola, (void*) it);
-    for(;cola != NULL; cola = cola_desencolar(cola)) {
-        nodo = (ITree) cola_primero(cola);
+    cola = cola_encolar(cola, (void *)it);
+    for (; cola != NULL; cola = cola_desencolar(cola)) {
+        nodo = (ITree)cola_primero(cola);
         visit(nodo->intervalo);
         // se agregan los hijos que tenga al final de la cola
         if (nodo->left != NULL)
-            cola = cola_encolar(cola, (void*) nodo->left);
+            cola = cola_encolar(cola, (void *)nodo->left);
         if (nodo->right != NULL)
-            cola = cola_encolar(cola, (void*) nodo->right);
+            cola = cola_encolar(cola, (void *)nodo->right);
     }
     cola_destruir(cola);
 }

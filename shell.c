@@ -4,13 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "libs/intervalo.h"
 #include "libs/itree.h"
 
 #define MAX_STDIN 25
-
-static void imprimir_intervalo(double* intervalo) {
-    printf("[%.2f, %.2f] ", intervalo[0], intervalo[1]);
-}
 
 void empty_stdin() {
     int c = getchar();
@@ -51,19 +48,20 @@ int main() {
     printf("\nIngrese 'help' para informacion sobre los comandos\n");
 
     ITree itree = itree_crear();
+    int continuar = 1;
+    char buf[MAX_STDIN];
+    char comando[6];
+    double arg[2];
+    int args;
 
     // Bucle de Shell
-    while (1) {
-        char buf[MAX_STDIN];
-        char comando[6];
-        double arg[2];
-
+    while (continuar) {
         printf(">> ");
 
         // [^\n] indica "leer hasta encontrar \n (sin incluirlo)"
         scanf("%[^\n]s", buf);
 
-        int args = sscanf(buf, "%s [%lf, %lf]", comando, arg, &arg[1]);
+        args = sscanf(buf, "%s [%lf, %lf]", comando, arg, &arg[1]);
         // args = cant de elementos escaneados
 
         // Limpiamos el buffer para la proxima entrada
@@ -79,16 +77,15 @@ int main() {
                 comparar el recibido con los posibles */
                 switch (match(comando)) {
                     case 1:
-                        itree_recorrer_dfs(itree, ITREE_RECORRIDO_IN, imprimir_intervalo);
+                        itree_recorrer_dfs(itree, ITREE_RECORRIDO_IN, intervalo_imprimir);
                         puts("");
                         break;
                     case 2:
-                        itree_recorrer_bfs(itree, imprimir_intervalo);
+                        itree_recorrer_bfs(itree, intervalo_imprimir);
                         puts("");
                         break;
                     case 3:
-                        itree_destruir(itree);
-                        return 0;
+                        continuar = 0;
                         break;
                     case 4:
                         help();
@@ -103,7 +100,7 @@ int main() {
                 /* los comandos que reciben intervalo tienen 1 caracter
                 y se debe chequear que el intervalo sea valido
                 (que el final no sea menor al comienzo) */
-                if (strlen(comando) == 1 && arg[0] <= arg[1]) {
+                if (strlen(comando) == 1 && intervalo_es_valido(arg)) {
                     switch (comando[0]) {
                         case 'i':
                             itree = itree_insertar(itree, arg);
@@ -123,7 +120,7 @@ int main() {
                             printf("Ingrese 'help' para informacion sobre los comandos.\n");
                             break;
                     }
-                } else if (arg[0] > arg[1]) {
+                } else if (!intervalo_es_valido(arg)) {
                     printf("ERROR: intervalo invalido.\n");
                     printf("El extremo izquierdo no puede superar al derecho\n");
                 } else {
@@ -137,6 +134,6 @@ int main() {
                 break;
         }
     }
-
+    itree_destruir(itree);
     return 0;
 }

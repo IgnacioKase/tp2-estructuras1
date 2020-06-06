@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #include "cola.h"
+#include "intervalo.h"
 
 typedef void (*FuncionVisitante)(double *intervalo);
 
