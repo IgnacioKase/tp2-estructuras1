@@ -44,6 +44,67 @@ void help() {
     printf("Recuerde que los intervalos deben contener numeros\n\n");
 }
 
+int shell_simple_command(char comando[6], ITree itree) {
+    /* los comandos que no reciben intervalo tienen varios
+                caracteres y por lo tanto se llama a una funcion para
+                comparar el recibido con los posibles */
+    int continuar = 1;
+    switch (match(comando)) {
+        case 1:
+            itree_recorrer_dfs(itree, ITREE_RECORRIDO_IN, intervalo_imprimir);
+            puts("");
+            break;
+        case 2:
+            itree_recorrer_bfs(itree, intervalo_imprimir);
+            puts("");
+            break;
+        case 3:
+            continuar = 0;
+            break;
+        case 4:
+            help();
+            break;
+        default:
+            printf("ERROR: comando invalido.\n");
+            printf("Ingrese 'help' para informacion sobre los comandos.\n");
+            break;
+    }
+    return continuar;
+}
+
+void shell_interval_command(char comando[6], double* arg, ITree itree) {
+    /* los comandos que reciben intervalo tienen 1 caracter
+                y se debe chequear que el intervalo sea valido
+                (que el final no sea menor al comienzo) */
+    if (strlen(comando) == 1 && intervalo_es_valido(arg)) {
+        switch (comando[0]) {
+            case 'i':
+                itree = itree_insertar(itree, arg);
+                break;
+            case 'e':
+                itree = itree_eliminar(itree, arg);
+                break;
+            case '?':
+                if (itree_intersecar(itree, arg)) {
+                    printf("Si\n");
+                } else {
+                    printf("No\n");
+                }
+                break;
+            default:
+                printf("ERROR: comando invalido.\n");
+                printf("Ingrese 'help' para informacion sobre los comandos.\n");
+                break;
+        }
+    } else if (!intervalo_es_valido(arg)) {
+        printf("ERROR: intervalo invalido.\n");
+        printf("El extremo izquierdo no puede superar al derecho\n");
+    } else {
+        printf("ERROR: comando invalido.\n");
+        printf("Ingrese 'help' para informacion sobre los comandos.\n");
+    }
+}
+
 int main() {
     printf("\nIngrese 'help' para informacion sobre los comandos\n");
 
@@ -72,61 +133,10 @@ int main() {
             2 numeros correspondientes al intervalo,
             por lo tanto debe haber 1 o 3 argumentos */
             case 1:
-                /* los comandos que no reciben intervalo tienen varios
-                caracteres y por lo tanto se llama a una funcion para
-                comparar el recibido con los posibles */
-                switch (match(comando)) {
-                    case 1:
-                        itree_recorrer_dfs(itree, ITREE_RECORRIDO_IN, intervalo_imprimir);
-                        puts("");
-                        break;
-                    case 2:
-                        itree_recorrer_bfs(itree, intervalo_imprimir);
-                        puts("");
-                        break;
-                    case 3:
-                        continuar = 0;
-                        break;
-                    case 4:
-                        help();
-                        break;
-                    default:
-                        printf("ERROR: comando invalido.\n");
-                        printf("Ingrese 'help' para informacion sobre los comandos.\n");
-                        break;
-                }
+                continuar = shell_simple_command(comando, itree);
                 break;
             case 3:
-                /* los comandos que reciben intervalo tienen 1 caracter
-                y se debe chequear que el intervalo sea valido
-                (que el final no sea menor al comienzo) */
-                if (strlen(comando) == 1 && intervalo_es_valido(arg)) {
-                    switch (comando[0]) {
-                        case 'i':
-                            itree = itree_insertar(itree, arg);
-                            break;
-                        case 'e':
-                            itree = itree_eliminar(itree, arg);
-                            break;
-                        case '?':
-                            if (itree_intersecar(itree, arg)) {
-                                printf("Si\n");
-                            } else {
-                                printf("No\n");
-                            }
-                            break;
-                        default:
-                            printf("ERROR: comando invalido.\n");
-                            printf("Ingrese 'help' para informacion sobre los comandos.\n");
-                            break;
-                    }
-                } else if (!intervalo_es_valido(arg)) {
-                    printf("ERROR: intervalo invalido.\n");
-                    printf("El extremo izquierdo no puede superar al derecho\n");
-                } else {
-                    printf("ERROR: comando invalido.\n");
-                    printf("Ingrese 'help' para informacion sobre los comandos.\n");
-                }
+                shell_interval_command(comando, arg, itree);
                 break;
             default:
                 printf("ERROR: cantidad invalida de argumentos.\n");
