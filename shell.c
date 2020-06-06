@@ -9,6 +9,19 @@
 
 #define MAX_STDIN 25
 
+typedef enum {
+    DFS,
+    BFS,
+    SALIR,
+    HELP
+} SimpleCommands;
+
+typedef enum {
+    INSERTAR,
+    ELIMINAR,
+    INTERSECAR
+} IntervalCommands;
+
 void empty_stdin() {
     int c = getchar();
     while (c != '\n' && c != EOF)
@@ -17,18 +30,27 @@ void empty_stdin() {
 
 /* Funcion auxiliar para switch sobre los comandos
 de longitud mayor a 1 */
-int match(char* comando) {
+SimpleCommands match_simple_command(char* comando) {
     if (!strcmp(comando, "dfs"))
-        return 1;
+        return DFS;
     if (!strcmp(comando, "bfs"))
-        return 2;
+        return BFS;
     if (!strcmp(comando, "salir"))
-        return 3;
+        return SALIR;
     if (!strcmp(comando, "help"))
-        return 4;
-    return 0;
+        return HELP;
+    return -1;
 }
 
+IntervalCommands match_interval_command(char comando) {
+    if (comando == 'i')
+        return INSERTAR;
+    if (comando == 'e')
+        return ELIMINAR;
+    if (comando == '?')
+        return INTERSECAR;
+    return -1;
+}
 // Informacion sobre los comandos posibles
 void help() {
     printf("\nComandos:\n");
@@ -49,19 +71,19 @@ int shell_simple_command(char comando[6], ITree itree) {
                 caracteres y por lo tanto se llama a una funcion para
                 comparar el recibido con los posibles */
     int continuar = 1;
-    switch (match(comando)) {
-        case 1:
+    switch (match_simple_command(comando)) {
+        case DFS:
             itree_recorrer_dfs(itree, ITREE_RECORRIDO_IN, intervalo_imprimir);
             puts("");
             break;
-        case 2:
+        case BFS:
             itree_recorrer_bfs(itree, intervalo_imprimir);
             puts("");
             break;
-        case 3:
+        case SALIR:
             continuar = 0;
             break;
-        case 4:
+        case HELP:
             help();
             break;
         default:
@@ -76,32 +98,35 @@ ITree shell_interval_command(char comando[6], double* arg, ITree itree) {
     /* los comandos que reciben intervalo tienen 1 caracter
                 y se debe chequear que el intervalo sea valido
                 (que el final no sea menor al comienzo) */
-    if (strlen(comando) == 1 && intervalo_es_valido(arg)) {
-        switch (comando[0]) {
-            case 'i':
-                itree = itree_insertar(itree, arg);
-                break;
-            case 'e':
-                itree = itree_eliminar(itree, arg);
-                break;
-            case '?':
-                if (itree_intersecar(itree, arg)) {
-                    printf("Si\n");
-                } else {
-                    printf("No\n");
-                }
-                break;
-            default:
-                printf("ERROR: comando invalido.\n");
-                printf("Ingrese 'help' para informacion sobre los comandos.\n");
-                break;
-        }
-    } else if (!intervalo_es_valido(arg)) {
+    if (!intervalo_es_valido(arg)) {
         printf("ERROR: intervalo invalido.\n");
         printf("El extremo izquierdo no puede superar al derecho\n");
-    } else {
+        return itree;
+    }
+    if (strlen(comando) != 1) {
         printf("ERROR: comando invalido.\n");
         printf("Ingrese 'help' para informacion sobre los comandos.\n");
+        return itree;
+    }
+
+    switch (match_interval_command(comando[0])) {
+        case INSERTAR:
+            itree = itree_insertar(itree, arg);
+            break;
+        case ELIMINAR:
+            itree = itree_eliminar(itree, arg);
+            break;
+        case INTERSECAR:
+            if (itree_intersecar(itree, arg)) {
+                printf("Si\n");
+            } else {
+                printf("No\n");
+            }
+            break;
+        default:
+            printf("ERROR: comando invalido.\n");
+            printf("Ingrese 'help' para informacion sobre los comandos.\n");
+            break;
     }
     return itree;
 }
