@@ -6,7 +6,6 @@ int main() {
     ITree itree = itree_crear();
     int continuar = 1;
     char buf[MAX_STDIN];
-    int args;
 
     // Bucle de Shell
     while (continuar) {
