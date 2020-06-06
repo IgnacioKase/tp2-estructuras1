@@ -72,7 +72,7 @@ int shell_simple_command(char comando[6], ITree itree) {
     return continuar;
 }
 
-void shell_interval_command(char comando[6], double* arg, ITree itree) {
+ITree shell_interval_command(char comando[6], double* arg, ITree itree) {
     /* los comandos que reciben intervalo tienen 1 caracter
                 y se debe chequear que el intervalo sea valido
                 (que el final no sea menor al comienzo) */
@@ -103,6 +103,7 @@ void shell_interval_command(char comando[6], double* arg, ITree itree) {
         printf("ERROR: comando invalido.\n");
         printf("Ingrese 'help' para informacion sobre los comandos.\n");
     }
+    return itree;
 }
 
 int main() {
@@ -136,7 +137,7 @@ int main() {
                 continuar = shell_simple_command(comando, itree);
                 break;
             case 3:
-                shell_interval_command(comando, arg, itree);
+                itree = shell_interval_command(comando, arg, itree);
                 break;
             default:
                 printf("ERROR: cantidad invalida de argumentos.\n");
