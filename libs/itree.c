@@ -221,49 +221,22 @@ ITree itree_eliminar(ITree it, double inter[2]) {
 los intervalos del arbol y, en caso afirmativo,
 retorna un apuntador al nodo correspondiente */
 ITree itree_intersecar(ITree it, double inter[2]) {
-    if (it == NULL)
+    if (it == NULL || it->max <= inter[0])
         return NULL;
 
-    if (it->max < inter[0])
-        /* si el comienzo de nuestro intervalo
-        es mayor al maximo final del arbol,
-        ningun intervalo lo interseca */
-        return NULL;
-    // en caso contrario se puede hallar alguna interseccion
-    if (it->intervalo[0] > inter[1])
-        /* si el final de nuestro intervalo
-        es menor al comienzo del intervalo actual
-        se busca en el subarbol izquierdo */
+    // Caso de intersecar con e intervalo a ctual
+    if (it->intervalo[0] <= inter[1] && inter[0] <= it->intervalo[1])
+        return it;
+
+    /* Si hay subarbol izquierdo y su maximo supera
+    al comienzo de nuestro intervalo, se puede hallar
+    interseccion alli */
+    if (it->left != NULL && it->left->max >= inter[0])
         return itree_intersecar(it->left, inter);
-    if (it->intervalo[1] < inter[0]) {
-        /* si el comienzo de nuestro intervalo
-        es mayor al final del intervalo actual */
-        if (it->right == NULL)
-            /* si no hay subarbol derecho
-            se busca en el izquierdo */
-            return itree_intersecar(it->left, inter);
-        if (it->left == NULL)
-            /* si no hay subarbol izquierdo
-            se busca en el derecho */
-            return itree_intersecar(it->right, inter);
-        if (it->max == it->right->max) {
-            /* si el maximo final del arbol corresponde
-            al subarbol derecho, se busca alli */
-            ITree intersec = itree_intersecar(it->right, inter);
-            if (intersec != NULL || it->left->max < inter[0])
-                /* si se encontro interseccion o no hay en
-                el otro subarbol, se retorna lo hallado */
-                return intersec;
-        }
-        /* si el maximo final corresponde al subarbol izquierdo
-        o no se hallo interseccion en el derecho
-        (puede que los comienzos de los intervalos de la derecha sean
-        mayores al final del nuestro) se busca a la izquierda */
-        return itree_intersecar(it->left, inter);
-    }
-    /* si no se cumplen las condiciones anteriores,
-    el intervalo actual interseca al nuestro */
-    return it;
+
+    /* Si no se cumple ninguno de los casos anteriores,
+    solo puede haber interseccion a la derecha */
+    return itree_intersecar(it->right, inter);
 }
 
 // Recorrido primero en profundidad del arbol de intervalos
