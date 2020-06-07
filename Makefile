@@ -42,14 +42,13 @@ cola.o: libs/cola.c libs/cola.h
 intervalo.o: libs/intervalo.c libs/intervalo.h
 	gcc -Wextra -c libs/intervalo.c
 
-clean:
+clean:= $(OSFLAG)
 ifeq ($(OSFLAG),WIN32)
 	del *.o
-endif
-ifeq ($(OSFLAG),LINUX)
+else ifeq ($(OSFLAG),LINUX)
 	rm *.o
-endif
-ifeq ($(OSFLAG),OSX)
+	echo $(OSFLAG)
+else ifeq ($(OSFLAG),OSX)
 	rm *.o
 endif
 	
