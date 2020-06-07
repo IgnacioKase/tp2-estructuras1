@@ -111,7 +111,10 @@ ITree shell_interval_command(char comando[6], double* arg, ITree itree) {
 
 int loop_shell(char buf[MAX_STDIN], ITree* itree) {
     int continuar = 1;
-    char comando[6];
+    char comando[MAX_STDIN];
+    /* no hay comandos tan largos pero esto
+    previene fallas cuando se ingresa
+    un comando incorrecto largo */
     double arg[2];
     int args;
 
