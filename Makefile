@@ -32,8 +32,8 @@ test_shell_comp: source/test_shell.c itree.o cola.o intervalo.o cola.o shell.o
 test_dummy_comp: tests/test.c itree.o cola.o intervalo.o cola.o
 	gcc -Wextra -o $(TEST) tests/test.c itree.o cola.o intervalo.o
 
-unit_test_python:
-	python tests/test.py
+unit_test_python: tests/test.py
+	python3 tests/test.py $(OSFLAG)
 
 shell.o: libs/shell.c libs/shell.h itree.o intervalo.o cola.o
 	gcc -Wextra -c libs/shell.c
@@ -50,10 +50,11 @@ intervalo.o: libs/intervalo.c libs/intervalo.h
 clean:
 ifeq ($(OSFLAG),WIN32)
 	del *.o
-else ifeq ($(OSFLAG),LINUX)
-	rm *.o
-	echo $(OSFLAG)
-else ifeq ($(OSFLAG),OSX)
+endif
+ifeq ($(OSFLAG),LINUX)
 	rm *.o
 endif
-	
+ifeq ($(OSFLAG),OSX)
+	rm *.o
+endif
+		

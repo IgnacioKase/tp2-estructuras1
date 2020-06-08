@@ -128,8 +128,10 @@ def open_safe(filename, mode, encoding):
     return open(filename, mode=mode, encoding=encoding)
 
 
-def test_template(PATH_TEST, PATH_STDOUT, test_func):
-
+def test_template(PATH_TEST, PATH_STDOUT, test_func, OS):
+    test_shell = "./test_shell"
+    if OS == "WIN32":
+        test_shell += ".exe"
     print("# Start test: %s" % test_func.__name__)
 
     fTest = open_safe(PATH_TEST, mode="w+", encoding="utf-8")
@@ -137,7 +139,7 @@ def test_template(PATH_TEST, PATH_STDOUT, test_func):
     fTest.close()
 
     start = time.time()
-    response = check_output(["test_shell.exe", PATH_TEST])
+    response = check_output([test_shell, PATH_TEST])
     end = time.time()
 
     fOut = open_safe(PATH_STDOUT, mode="w+", encoding="utf-8")
@@ -157,9 +159,9 @@ def main():
          "test_cases/out_test_overlap.txt", test_overlap),
         ("test_cases/test_size.txt", "test_cases/out_test_size.txt", test_size),
     ]
-
+    OS = sys.argv[1]
     for test in test_list:
-        test_template(test[0], test[1], test[2])
+        test_template(test[0], test[1], test[2], OS)
 
 
 if __name__ == "__main__":

@@ -15,7 +15,3 @@ int intervalo_es_valido(double intervalo[2]) {
 int intervalo_interseca(double x[2], double y[2]) {
     return x[0] <= y[1] && y[0] <= x[1];
 }
-
-int equal_double(double a, double b) {
-    return abs(a - b) < ENTORNO;
-}

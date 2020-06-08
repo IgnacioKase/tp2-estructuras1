@@ -1,8 +1,6 @@
 #ifndef __INTERVALO_H__
 #define __INTERVALO_H__
 
-#define ENTORNO 0.00001
-
 #include <stdio.h>
 #include <stdlib.h>
 
