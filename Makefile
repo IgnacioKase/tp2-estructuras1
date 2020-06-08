@@ -4,16 +4,18 @@ TEST = test
 
 OSFLAG 				:=
 ifeq ($(OS),Windows_NT)
-	OSFLAG += WIN32
+	OSFLAG +=WIN32
 else
 	UNAME_S := $(shell uname -s)
-	ifeq ($(UNAME_S),Linux)
-		OSFLAG += LINUX
-	endif
-	ifeq ($(UNAME_S),Darwin)
-		OSFLAG += OSX
-	endif
+ifeq ($(UNAME_S),Linux)
+		OSFLAG +=LINUX
 endif
+ifeq ($(UNAME_S),Darwin)
+		OSFLAG +=OSX
+endif
+endif
+
+OSFLAG := $(firstword $(subst :, ,$(OSFLAG)))
 
 all: interprete clean
 
@@ -32,8 +34,16 @@ test_shell_comp: source/test_shell.c itree.o cola.o intervalo.o cola.o shell.o
 test_dummy_comp: tests/test.c itree.o cola.o intervalo.o cola.o
 	gcc -Wextra -o $(TEST) tests/test.c itree.o cola.o intervalo.o
 
-unit_test_python: tests/test.py
+unit_test_python:
+ifeq ($(OSFLAG), WIN32)
+	python tests/test.py $(OSFLAG)
+endif
+ifeq ($(OSFLAG), LINUX)
 	python3 tests/test.py $(OSFLAG)
+endif
+ifeq ($(OSFLAG), OSX)
+	python3 tests/test.py $(OSFLAG)
+endif
 
 shell.o: libs/shell.c libs/shell.h itree.o intervalo.o cola.o
 	gcc -Wextra -c libs/shell.c
@@ -48,13 +58,12 @@ intervalo.o: libs/intervalo.c libs/intervalo.h
 	gcc -Wextra -c libs/intervalo.c
 
 clean:
-ifeq ($(OSFLAG),WIN32)
+ifeq ($(OSFLAG), WIN32)
 	del *.o
 endif
-ifeq ($(OSFLAG),LINUX)
+ifeq ($(OSFLAG), LINUX)
 	rm *.o
 endif
-ifeq ($(OSFLAG),OSX)
+ifeq ($(OSFLAG), OSX)
 	rm *.o
 endif
-		

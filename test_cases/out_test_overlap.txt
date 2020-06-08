@@ -1,4 +1,4 @@
-*** Execution time: 0.0010571479797363281 seg.***
+*** Execution time: 0.0016744136810302734 seg.***
 
 Si
 Si
