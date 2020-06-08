@@ -17,6 +17,8 @@ SimpleCommands match_simple_command(char* comando) {
         return SALIR;
     if (!strcmp(comando, "help"))
         return HELP;
+    if (!strcmp(comando, "print"))
+        return PRINT2D;
     return -1;
 }
 
@@ -64,6 +66,9 @@ int shell_simple_command(char comando[6], ITree itree) {
             break;
         case HELP:
             help();
+            break;
+        case PRINT2D:
+            print2D(itree);
             break;
         default:
             printf("ERROR: comando invalido.\n");

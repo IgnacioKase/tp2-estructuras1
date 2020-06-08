@@ -42,7 +42,7 @@ cola.o: libs/cola.c libs/cola.h
 intervalo.o: libs/intervalo.c libs/intervalo.h
 	gcc -Wextra -c libs/intervalo.c
 
-clean:= $(OSFLAG)
+clean:
 ifeq ($(OSFLAG),WIN32)
 	del *.o
 else ifeq ($(OSFLAG),LINUX)

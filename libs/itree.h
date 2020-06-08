@@ -40,6 +40,8 @@ void itree_recorrer_bfs(ITree it, FuncionVisitante visit);
 
 int itree_altura(ITree it);
 
+double itree_max(ITree it);
+
 /////////
 int getBalance(ITree N);
 void print2DUtil(ITree root, int space);

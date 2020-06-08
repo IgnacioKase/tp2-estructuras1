@@ -10,12 +10,13 @@
 #include "intervalo.h"
 #include "itree.h"
 
-#define MAX_STDIN 25
+#define MAX_STDIN 80
 
 typedef enum {
     DFS,
     BFS,
     SALIR,
+    PRINT2D,
     HELP
 } SimpleCommands;
 

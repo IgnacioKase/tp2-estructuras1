@@ -6,7 +6,7 @@ int itree_balance(ITree N) {
     return itree_altura(N->left) - itree_altura(N->right);
 }
 
-#define COUNT 5
+#define COUNT 10
 // Function to print binary tree in 2D
 // It does reverse inorder traversal
 void print2DUtil(ITree root, int space) {
@@ -25,7 +25,7 @@ void print2DUtil(ITree root, int space) {
     printf("\n");
     for (int i = COUNT; i < space; i++)
         printf(" ");
-    printf("[%.2f, %.2f] H: %d\n", root->intervalo[0], root->intervalo[1], itree_balance(root));
+    printf("[%.2f, %.2f] H: %d - MAX: %.2f\n", root->intervalo[0], root->intervalo[1], itree_balance(root), root->max);
 
     // Process left child
     print2DUtil(root->left, space);
@@ -74,15 +74,25 @@ int itree_altura(ITree it) {
     return (1 + max_i(itree_altura(it->left), itree_altura(it->right)));
 }
 
+double itree_max(ITree it) {
+    if (it == NULL)
+        return 0;
+    return it->max;
+}
+
+double itree_update_max(ITree it) {
+    return max_d(max_d(itree_max(it->left), itree_max(it->right)), it->intervalo[1]);
+}
+
 ITree itree_rotar_der(ITree it) {
     ITree left = it->left;
     ITree lr = left->right;
 
     left->right = it;
     it->left = lr;
-    if (lr != NULL)
-        it->max = max_d(it->max, lr->max);
-    left->max = max_d(left->max, it->max);
+
+    itree_update_max(it);
+    itree_update_max(left);
 
     return left;
 }
@@ -93,9 +103,9 @@ ITree itree_rotar_izq(ITree it) {
 
     right->left = it;
     it->right = rl;
-    if (rl != NULL)
-        it->max = max_d(it->max, rl->max);
-    right->max = max_d(right->max, it->max);
+
+    itree_update_max(it);
+    itree_update_max(right);
 
     return right;
 }
@@ -221,17 +231,19 @@ ITree itree_eliminar(ITree it, double inter[2]) {
 los intervalos del arbol y, en caso afirmativo,
 retorna un apuntador al nodo correspondiente */
 ITree itree_intersecar(ITree it, double inter[2]) {
-    if (it == NULL || it->max <= inter[0])
+    if (it == NULL)
         return NULL;
 
-    // Caso de intersecar con e intervalo a ctual
-    if (it->intervalo[0] <= inter[1] && inter[0] <= it->intervalo[1])
+    // Caso de intersecar con e intervalo actual
+    if (intervalo_interseca(it->intervalo, inter))
         return it;
 
     /* Si hay subarbol izquierdo y su maximo supera
     al comienzo de nuestro intervalo, se puede hallar
     interseccion alli */
-    if (it->left != NULL && it->left->max >= inter[0])
+    if (it->left != NULL)
+        printf("\n##PRE-BEGIN\nit->left->max: %.2f\tinter[0]: %.2f\t Comp: %d\n", it->left->max, inter[0], it->left->max >= inter[0]);
+    if (it->left != NULL && (it->left->max >= inter[0]))
         return itree_intersecar(it->left, inter);
 
     /* Si no se cumple ninguno de los casos anteriores,
