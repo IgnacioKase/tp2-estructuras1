@@ -17,9 +17,11 @@ endif
 
 all: interprete clean
 
+test: test_shell unit_test_python clean
+
 test_shell: test_shell_comp clean
 
-test: test_comp clean
+test_dummy: test_comp clean
 
 interprete: source/interprete.c itree.o intervalo.o cola.o shell.o
 	gcc -Wextra -o $(INTERPRETE) source/interprete.c itree.o intervalo.o cola.o shell.o
@@ -27,8 +29,11 @@ interprete: source/interprete.c itree.o intervalo.o cola.o shell.o
 test_shell_comp: source/test_shell.c itree.o cola.o intervalo.o cola.o shell.o
 	gcc -Wextra -o $(TEST_SHELL) source/test_shell.c itree.o cola.o intervalo.o shell.o
 
-test_comp: tests/test.c itree.o cola.o intervalo.o cola.o
+test_dummy_comp: tests/test.c itree.o cola.o intervalo.o cola.o
 	gcc -Wextra -o $(TEST) tests/test.c itree.o cola.o intervalo.o
+
+unit_test_python:
+	python tests/test.py
 
 shell.o: libs/shell.c libs/shell.h itree.o intervalo.o cola.o
 	gcc -Wextra -c libs/shell.c

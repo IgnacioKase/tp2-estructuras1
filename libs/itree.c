@@ -80,7 +80,7 @@ double itree_max(ITree it) {
     return it->max;
 }
 
-double itree_update_max(ITree it) {
+double itree_get_update_max(ITree it) {
     return max_d(max_d(itree_max(it->left), itree_max(it->right)), it->intervalo[1]);
 }
 
@@ -91,8 +91,8 @@ ITree itree_rotar_der(ITree it) {
     left->right = it;
     it->left = lr;
 
-    itree_update_max(it);
-    itree_update_max(left);
+    it->max = itree_get_update_max(it);
+    left->max = itree_get_update_max(left);
 
     return left;
 }
@@ -104,8 +104,8 @@ ITree itree_rotar_izq(ITree it) {
     right->left = it;
     it->right = rl;
 
-    itree_update_max(it);
-    itree_update_max(right);
+    it->max = itree_get_update_max(it);
+    right->max = itree_get_update_max(right);
 
     return right;
 }
@@ -126,10 +126,10 @@ ITree itree_insertar(ITree it, double inter[2]) {
         /* el intervalo se inserta a la izquierda si el comienzo es menor
         o si es igual pero el final es menor */
         it->left = itree_insertar(it->left, inter);
-        it->max = max_d(it->max, it->left->max);
+        it->max = itree_get_update_max(it);
     } else if (intervalo_min(it->intervalo, inter)) {
         it->right = itree_insertar(it->right, inter);
-        it->max = max_d(it->max, it->right->max);
+        it->max = itree_get_update_max(it);
     } else  // si el intervalo ya existe, no se vuelve a insertar
         return it;
 
@@ -151,6 +151,7 @@ ITree itree_insertar(ITree it, double inter[2]) {
             it->right = itree_rotar_der(it->right);
         return itree_rotar_izq(it);
     }
+
     // caso ya balanceado
     return it;
 }
@@ -201,9 +202,7 @@ ITree itree_eliminar(ITree it, double inter[2]) {
             it->right = itree_eliminar(it->right, nuevo->intervalo);
             /* se vuelve a calcular el maximo
             en caso de que haya sido del intervalo eliminado */
-            if (it->right != NULL)
-                it->max = max_d(it->max, it->right->max);
-            it->max = max_d(nuevo->intervalo[1], it->left->max);
+            it->max = itree_get_update_max(it);
         }
     }
 
@@ -241,8 +240,6 @@ ITree itree_intersecar(ITree it, double inter[2]) {
     /* Si hay subarbol izquierdo y su maximo supera
     al comienzo de nuestro intervalo, se puede hallar
     interseccion alli */
-    if (it->left != NULL)
-        printf("\n##PRE-BEGIN\nit->left->max: %.2f\tinter[0]: %.2f\t Comp: %d\n", it->left->max, inter[0], it->left->max >= inter[0]);
     if (it->left != NULL && (it->left->max >= inter[0]))
         return itree_intersecar(it->left, inter);
 
