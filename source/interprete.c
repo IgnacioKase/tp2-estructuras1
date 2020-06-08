@@ -15,5 +15,7 @@ int main() {
 
         continuar = loop_shell(buf, &itree);
     }
+    
+    itree_destruir(itree);
     return 0;
 }
