@@ -11,11 +11,7 @@ int main() {
     while (continuar) {
         printf(">> ");
 
-        // [^\n] indica "leer hasta encontrar \n (sin incluirlo)"
-        scanf("%[^\n]s", buf);
-
-        // Limpiamos el buffer para la proxima entrada
-        empty_stdin();
+        fgets(buf, MAX_STDIN - 1, stdin);
 
         continuar = loop_shell(buf, &itree);
     }
