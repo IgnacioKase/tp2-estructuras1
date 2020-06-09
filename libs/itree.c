@@ -74,15 +74,15 @@ int itree_altura(ITree it) {
     return (1 + max_i(itree_altura(it->left), itree_altura(it->right)));
 }
 
-/* Devuelve el maximo final de los intervalos para actualizar
-   en caso de insertar o eliminar intervalos */
-double itree_get_update_max(ITree it) {
-    int max = it->intervalo[1];
+/* Actualiza el maximo final de los intervalos
+   en caso de insertar, rotar o eliminar
+   (no se usa con intervalos vacios) */
+void itree_update_max(ITree it) {
+    it->max = it->intervalo[1];
     if (it->left != NULL)
-        max = max_d(it->left->max, max);
+        it->max = max_d(it->left->max, it->max);
     if (it->left != NULL)
-        max = max_d(it->right->max, max);
-    return max;
+        it->max = max_d(it->right->max, it->max);
 }
 
 // Funciones auxiliares al balanceo
@@ -93,8 +93,8 @@ ITree itree_rotar_der(ITree it) {
     left->right = it;
     it->left = lr;
 
-    it->max = itree_get_update_max(it);
-    left->max = itree_get_update_max(left);
+    itree_update_max(it);
+    itree_update_max(left);
 
     return left;
 }
@@ -106,8 +106,8 @@ ITree itree_rotar_izq(ITree it) {
     right->left = it;
     it->right = rl;
 
-    it->max = itree_get_update_max(it);
-    right->max = itree_get_update_max(right);
+    itree_update_max(it);
+    itree_update_max(right);
 
     return right;
 }
@@ -128,10 +128,10 @@ ITree itree_insertar(ITree it, double inter[2]) {
         /* el intervalo se inserta a la izquierda si el comienzo es menor
            o si es igual pero el final es menor */
         it->left = itree_insertar(it->left, inter);
-        it->max = itree_get_update_max(it);
+        itree_update_max(it);
     } else if (intervalo_min(it->intervalo, inter)) {
         it->right = itree_insertar(it->right, inter);
-        it->max = itree_get_update_max(it);
+        itree_update_max(it);
     } else  // si el intervalo ya existe, no se vuelve a insertar
         return it;
 
@@ -204,7 +204,7 @@ ITree itree_eliminar(ITree it, double inter[2]) {
             it->right = itree_eliminar(it->right, nuevo->intervalo);
             /* se vuelve a calcular el maximo
                en caso de que haya sido del intervalo eliminado */
-            it->max = itree_get_update_max(it);
+            itree_update_max(it);
         }
     }
 
