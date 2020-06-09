@@ -232,7 +232,9 @@ ITree itree_eliminar(ITree it, double inter[2]) {
    los intervalos del arbol y, en caso afirmativo,
    retorna un apuntador al nodo correspondiente */
 ITree itree_intersecar(ITree it, double inter[2]) {
-    if (it == NULL || it->max < inter[0])
+    if (it == NULL)
+        return NULL;
+    if(it->max < inter[0])
         /* si el maximo no llega al comienzo de
            nuestro intervalo, no hay interseccion
            posible */
