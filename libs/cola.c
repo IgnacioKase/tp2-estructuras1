@@ -22,9 +22,7 @@ Cola cola_encolar(Cola c, void* dato) {
         return nuevoNodo;
 
     Cola nodo = c;
-    for (; nodo->sig != NULL; nodo = nodo->sig)
-        ;
-    /* ahora 'nodo' apunta al ultimo elemento en la lista */
+    for (; nodo->sig != NULL; nodo = nodo->sig);
 
     nodo->sig = nuevoNodo;
     return c;
