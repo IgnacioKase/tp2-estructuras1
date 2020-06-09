@@ -81,7 +81,7 @@ void itree_update_max(ITree it) {
     it->max = it->intervalo[1];
     if (it->left != NULL)
         it->max = max_d(it->left->max, it->max);
-    if (it->left != NULL)
+    if (it->right != NULL)
         it->max = max_d(it->right->max, it->max);
 }
 
