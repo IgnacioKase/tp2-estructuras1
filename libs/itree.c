@@ -1,9 +1,9 @@
 #include "itree.h"
 
-int itree_balance(ITree N) {
-    if (N == NULL)
+int itree_balance(ITree it) {
+    if (it == NULL)
         return 0;
-    return itree_altura(N->left) - itree_altura(N->right);
+    return itree_altura(it->left) - itree_altura(it->right);
 }
 
 #define COUNT 10
@@ -74,16 +74,18 @@ int itree_altura(ITree it) {
     return (1 + max_i(itree_altura(it->left), itree_altura(it->right)));
 }
 
-double itree_max(ITree it) {
-    if (it == NULL)
-        return 0;
-    return it->max;
-}
-
+/* Devuelve el maximo final de los intervalos para actualizar
+   en caso de insertar o eliminar intervalos */
 double itree_get_update_max(ITree it) {
-    return max_d(max_d(itree_max(it->left), itree_max(it->right)), it->intervalo[1]);
+    int max = it->intervalo[1];
+    if (it->left != NULL)
+        max = max_d(it->left->max, max);
+    if (it->left != NULL)
+        max = max_d(it->right->max, max);
+    return max;
 }
 
+// Funciones auxiliares al balanceo
 ITree itree_rotar_der(ITree it) {
     ITree left = it->left;
     ITree lr = left->right;
@@ -124,7 +126,7 @@ ITree itree_insertar(ITree it, double inter[2]) {
 
     if (intervalo_min(inter, it->intervalo)) {
         /* el intervalo se inserta a la izquierda si el comienzo es menor
-        o si es igual pero el final es menor */
+           o si es igual pero el final es menor */
         it->left = itree_insertar(it->left, inter);
         it->max = itree_get_update_max(it);
     } else if (intervalo_min(it->intervalo, inter)) {
@@ -134,20 +136,20 @@ ITree itree_insertar(ITree it, double inter[2]) {
         return it;
 
     /* si se inserta en uno de los subarboles
-    se debe asegurar que se mantenga el balance */
+       se debe asegurar que se mantenga el balance */
     int balance = itree_balance(it);
 
     if (balance > 1) {  // caso desbalanceado hacia la izquierda
         if (intervalo_min(it->left->intervalo, inter))
             /* si se inserto a la derecha del subarbol izquierdo
-            primero se debe rotar este hacia la izquierda */
+               primero se debe rotar este hacia la izquierda */
             it->left = itree_rotar_izq(it->left);
         return itree_rotar_der(it);
     }
     if (balance < -1) {  // caso desbalanceado hacia la derecha
         if (intervalo_min(inter, it->right->intervalo))
             /* si se inserto a la izquierda del subarbol derecho
-            primero se debe rotar este hacia la derecha */
+               primero se debe rotar este hacia la derecha */
             it->right = itree_rotar_der(it->right);
         return itree_rotar_izq(it);
     }
@@ -157,8 +159,8 @@ ITree itree_insertar(ITree it, double inter[2]) {
 }
 
 /* Funcion auxiliar a eliminacion de intervalos
-usada para hallar minimo intervalo de subarbol derecho
-luego de eliminar */
+   usada para hallar minimo intervalo de subarbol derecho
+   luego de eliminar */
 ITree itree_minimo(ITree it) {
     if (it == NULL)
         return NULL;
@@ -181,15 +183,15 @@ ITree itree_eliminar(ITree it, double inter[2]) {
     } else {  // caso de eliminar intervalo actual
         if (it->right == NULL) {
             /* si no hay subarbol derecho
-            solo se necesita eliminar la raiz
-            y devolver el izquierdo */
+               solo se necesita eliminar la raiz
+               y devolver el izquierdo */
             ITree temp = it;
             it = it->left;
             free(temp);
         } else if (it->left == NULL) {
             /* si no hay subarbol izquierdo
-            solo se necesita eliminar la raiz
-            y devolver el derecho */
+               solo se necesita eliminar la raiz
+               y devolver el derecho */
             ITree temp = it;
             it = it->right;
             free(temp);
@@ -201,7 +203,7 @@ ITree itree_eliminar(ITree it, double inter[2]) {
             // se elimina la nueva raiz del subarbol derecho
             it->right = itree_eliminar(it->right, nuevo->intervalo);
             /* se vuelve a calcular el maximo
-            en caso de que haya sido del intervalo eliminado */
+               en caso de que haya sido del intervalo eliminado */
             it->max = itree_get_update_max(it);
         }
     }
@@ -227,24 +229,27 @@ ITree itree_eliminar(ITree it, double inter[2]) {
 }
 
 /* Determina si un intervalo se intersecta con alguno de
-los intervalos del arbol y, en caso afirmativo,
-retorna un apuntador al nodo correspondiente */
+   los intervalos del arbol y, en caso afirmativo,
+   retorna un apuntador al nodo correspondiente */
 ITree itree_intersecar(ITree it, double inter[2]) {
-    if (it == NULL)
+    if (it == NULL || it->max < inter[0])
+        /* si el maximo no llega al comienzo de
+           nuestro intervalo, no hay interseccion
+           posible */
         return NULL;
 
-    // Caso de intersecar con e intervalo actual
+    // Caso de intersecar con el intervalo actual
     if (intervalo_interseca(it->intervalo, inter))
         return it;
 
     /* Si hay subarbol izquierdo y su maximo supera
-    al comienzo de nuestro intervalo, se puede hallar
-    interseccion alli */
+       al comienzo de nuestro intervalo, se puede hallar
+       interseccion alli */
     if (it->left != NULL && (it->left->max >= inter[0]))
         return itree_intersecar(it->left, inter);
 
     /* Si no se cumple ninguno de los casos anteriores,
-    solo puede haber interseccion a la derecha */
+       solo puede haber interseccion a la derecha */
     return itree_intersecar(it->right, inter);
 }
 
