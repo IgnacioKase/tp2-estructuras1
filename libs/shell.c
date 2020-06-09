@@ -1,13 +1,7 @@
 #include "shell.h"
 
-void empty_stdin() {
-    int c = getchar();
-    while (c != '\n' && c != EOF)
-        c = getchar();
-}
-
 /* Funcion auxiliar para switch sobre los comandos
-de longitud mayor a 1 */
+   de longitud mayor a 1 */
 SimpleCommands match_simple_command(char* comando) {
     if (!strcmp(comando, "dfs"))
         return DFS;
@@ -22,6 +16,8 @@ SimpleCommands match_simple_command(char* comando) {
     return -1;
 }
 
+/* Funcion auxiliar para switch sobre los comandos
+   de longitud 1 */
 IntervalCommands match_interval_command(char comando) {
     if (comando == 'i')
         return INSERTAR;
@@ -43,14 +39,13 @@ void help() {
     printf("con recorrido primero en profundidad\n");
     printf("bfs: imprime los intervalos del arbol ");
     printf("con recorrido primero a lo ancho\n");
+    printf("print: imprime los intervalos en forma de arbol\n");
     printf("salir: destruye el arbol y termina el programa\n\n");
     printf("Recuerde que los intervalos deben contener numeros\n\n");
 }
 
+// Procesamiento de los comandos que no reciben intervalo
 int shell_simple_command(char comando[6], ITree itree) {
-    /* los comandos que no reciben intervalo tienen varios
-                caracteres y por lo tanto se llama a una funcion para
-                comparar el recibido con los posibles */
     int continuar = 1;
     switch (match_simple_command(comando)) {
         case DFS:
@@ -78,10 +73,11 @@ int shell_simple_command(char comando[6], ITree itree) {
     return continuar;
 }
 
+// Procesamiento de los comandos que reciben intervalo
 ITree shell_interval_command(char comando[6], double* arg, ITree itree) {
     /* los comandos que reciben intervalo tienen 1 caracter
-                y se debe chequear que el intervalo sea valido
-                (que el final no sea menor al comienzo) */
+       y se debe chequear que el intervalo sea valido
+       (que el final no sea menor al comienzo) */
     if (!intervalo_es_valido(arg)) {
         printf("ERROR: intervalo invalido.\n");
         printf("El extremo izquierdo no puede superar al derecho\n");
@@ -118,8 +114,8 @@ int loop_shell(char buf[MAX_STDIN], ITree* itree) {
     int continuar = 1;
     char comando[MAX_STDIN];
     /* no hay comandos tan largos pero esto
-    previene fallas cuando se ingresa
-    un comando incorrecto largo */
+       previene fallas cuando se ingresa
+       un comando incorrecto largo */
     double arg[2];
     int args;
 
@@ -128,8 +124,8 @@ int loop_shell(char buf[MAX_STDIN], ITree* itree) {
 
     switch (args) {
         /* Se debe recibir 1 comando y para algunos casos
-            2 numeros correspondientes al intervalo,
-            por lo tanto debe haber 1 o 3 argumentos */
+           2 numeros correspondientes al intervalo,
+           por lo tanto debe haber 1 o 3 argumentos */
         case 1:
             continuar = shell_simple_command(comando, *itree);
             break;
