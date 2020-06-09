@@ -12,7 +12,9 @@ int main() {
         printf(">> ");
 
         fgets(buf, MAX_STDIN - 1, stdin);
-
+        
+        /* continuar = 0 indica que el usuario
+        pidio salir */
         continuar = loop_shell(buf, &itree);
     }
     
