@@ -7,6 +7,8 @@
 #include "cola.h"
 #include "intervalo.h"
 
+#define PRINT_2D_SPACES 8
+
 typedef void (*FuncionVisitante)(double *intervalo);
 
 typedef struct _ITNodo {
@@ -28,6 +30,10 @@ ITree itree_crear();
 
 void itree_destruir(ITree it);
 
+int itree_altura(ITree it);
+
+void itree_imprimir_2d(ITree root);
+
 ITree itree_insertar(ITree it, double inter[2]);
 
 ITree itree_eliminar(ITree it, double inter[2]);
@@ -37,14 +43,5 @@ ITree itree_intersecar(ITree it, double inter[2]);
 void itree_recorrer_dfs(ITree it, ITreeOrdenDeRecorrido orden, FuncionVisitante visit);
 
 void itree_recorrer_bfs(ITree it, FuncionVisitante visit);
-
-int itree_altura(ITree it);
-
-/////////
-int getBalance(ITree N);
-void print2DUtil(ITree root, int space);
-void print2D(ITree root);
-ITree insert_in_tree(ITree it, double a, double b);
-///////////////
 
 #endif

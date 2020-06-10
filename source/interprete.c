@@ -1,5 +1,7 @@
 #include "../libs/shell.h"
 
+// valgrind -v --leak-check=full --show-reachable=yes ./interprete
+
 int main() {
     printf("\nIngrese 'help' para informacion sobre los comandos\n");
 

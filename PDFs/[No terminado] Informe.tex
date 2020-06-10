@@ -1,0 +1,121 @@
+\documentclass[a4paper, 12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{listings}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref, tabulary, array, }
+
+\title{Trabajo Práctico II - Estructuras de datos y algortimos 1}
+\author{Valentina Prato - Ignacio Kasevich }
+\date{Junio 2020}
+
+\begin{document}
+
+\maketitle
+\section{Estructura del proyecto}
+	Para organizar mejor el proyecto y el trabajo en equipo se buscó tener una buena estructura de proyecto donde se separen de forma clara y limpia los distintos elementos, recursos y utilidades necesarias para este trabajo práctico. El proyecto consta de estos directorios:
+	\begin{lstlisting}[language=C]
+    |
+    | - - libs
+    | - - source               
+    | - - tests
+    |      | - - test_cases
+    |
+    \end{lstlisting}
+    
+\begin{itemize}
+\item \textbf{libs}: librerias/headers utlizados, implementaciones de estructuras de datos, librerias de funciones de uso común del proyecto.
+\item \textbf{source}: código fuente de los dos programas principales del proyecto. El interprete y otro programa 'test\_shell' para debuggear el funcionamiento de este.
+\item  \textbf{tests}: saquí se encuentran dos programas, un test muy simple realizado en c, 'test\_dummy' y un programa realizado en python que testea la estructura de árbol en varios puntos utilizando el programa en c 'test\_shell'. Además, aquí se en test\_casesguardan los resultados de las test de python.
+\end{itemize}
+
+\section{Estructura de datos}
+
+\subsection{Árbol binario balanceado de intervalos}
+	Para la implementación de esta estructura de datos se partió desde la estructura de árbol binario balanceado de números enteros previamente realizada. Para lograr una implementación sencilla y eficiente utilizando la estructura previamente diseñado se buscó encapsular el funcionamiento de los intervalos. Es decir, si antes se comparaban las claves (datos int de la estructura previa) con una función 'menor' para ordenar los datos en el árbol, entonces ahora se debía implementar una función 'intervalo\_min', que indique si un intervalo es menor que otro. Para lograr encapsular este comportamiento sólo se necesitaron dos funciones, 'intervalo\_min' recién explicada e 'intervalo\_interseca' que indica si dos intervalos tienen intersección. Se implementaron otras funciones de intervalo, pero no son requeridas para la estructura de árbol.
+    Los mayores problemas en cuanto a la implementación de esta estructura surgieron con la mejora de guardar el máximo de cada árbol. Ya que este máximo había que actualizarlo cada vez que la estructura del árbol cambiara (por insertar o eliminar un elemento). Aislando este comportamiento de actualizar el máximo con la función 'itree\_actualizar\_max' y llamando esta función cada vez que la estructura del árbol cambiara (rotaciones izquierda y derecha, insertar y eliminar un nodo) se logró implementar correctamente esta mejora.
+    Dos cosas fueron muy útiles a la hora de implementar y corregir esta estructura: primero, identificar información o procedimientos utilizados múltiples veces para centralizarlos en funciones que realicen estas acciones y así minimizar la posibilidad de error en la estructura y la facilidad de corregir un error a la hora de encontrarlo. En segundo lugar, una función para imprimir un árbol en '2D' es decir, verlo con formato de árbol en la consola, por la utilidad de esta se decidió dejarla en el interprete a través de la función 'print'.
+
+\subsection{Cola}
+	Se utilizó una estructura de cola (de puntero void*) solamente para implementar el recorrido bfs (Breadth-first search) en el árbol AVL de intervalos.
+
+\section{Tests}
+	Para garantizar el correcto funcionamiento de las funciones y estructuras utilizadas se implementaron múltiples tests, algunos realizados 'a mano' y otros implementados con programas de ayuda en python y en c. La parte mas importante del testeo fue la realizada en python, allí se escribieron múltiples tests que atacaban distintos aspectos de la estructura. Para correr los tests se hizo un programa intermediario (test\_shell) que tomaba como argumento un archivo de instrucciones para el interprete realizado en c. Cada línea de este archivo sería entonces un comando a ejecutar por el interprete. Este programa es exactamente igual (utiliza la misma librería shell.h) que el programa 'interprete' (el programa principal de este proyecto), pero a diferencia que en vez de tomar los comandos por la entrada estándar, toma los comandos del archivo dado como argumento.
+    Partiendo entonces del programa test\_shell realizado en c, en python tendríamos una herramienta para correr los tests. Se diseñaron así numerosos tests de inserción, eliminación, intersección, intervalos con números positivos, negativos, chicos, grandes, aleatorios y tamaños muy grandes (100.000 nodos) de árboles. Además, uno de los tests mas útiles, es el test de valgrind, se corre un test pseudo aleatorio, donde hay muchas eliminaciones, inserciones, intersecciones e impresiones y este se hace a través del programa de valgrind, checkando asi que no haya leaks de memoria. A cada uno de estos tests se les tomo el tiempo de ejecución para tener un estimativo de eficacia de la estructura y como los distintos cambios afectaban a la estructura. Como punto negativo en este apartado, es que no se realizaron las comprobaciones de estos tests de forma programada, si no que se comprobaban 'a mano'. Esto resultó asi principalmente por una cuestión de tiempo.
+    Aun con este problema, esta implementación de tests logró encontrar varios errores y problemas en la estructura, por lo cuál si bien no fue la mejor implementación, cumplió bien su función.
+    
+\section{Makefile}
+	El archivo Makefile generado posee varias comandos, a continuación se detallan los mismos:
+    
+\begin{itemize}
+\item \textbf{make / make all}: compila el programa principal 'interprete' y limpia los archivos objeto .o.
+\item \textbf{make test}: compila el programa test\_shell y llama a los tests de python y limpia los archivos objeto .o.
+\item \textbf{make test\_shell}: compila el programa test\_shell y limpia los archivos objeto .o.
+\item \textbf{make test\_dummy}: compila el programa test\_dummy y limpia los archivos objeto .o.
+\item \textbf{make unit\_test\_python}: ejecuta los tests de python.
+\end{itemize}
+
+\section{Detalles de Valgrind}
+
+\subsection{Intreprete}
+\textbf{Comando ejecutado:} valgrind -v --leak-check=full --show-reachable=yes ./interprete
+\newline
+
+==76295== 
+
+==76295== HEAP SUMMARY:
+
+==76295==     in use at exit: 0 bytes in 0 blocks
+
+==76295==   total heap usage: 5 allocs, 5 frees, 2,144 bytes allocated
+
+==76295== 
+
+==76295== All heap blocks were freed -- no leaks are possible
+
+==76295== 
+
+==76295== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+\newline
+   
+\textbf{Comando ejecutado:} make test (extracto de uno de los tests)
+\newline
+
+==79180== 
+
+==79180== HEAP SUMMARY:
+
+==79180==     in use at exit: 0 bytes in 0 blocks
+
+==79180==   total heap usage: 9,555 allocs, 9,555 frees, 281,688 bytes allocated
+
+==79180== 
+
+==79180== All heap blocks were freed -- no leaks are possible
+
+==79180== 
+
+==79180== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+# End test: test\_valgrind
+
+*** Execution time: 7.530091285705566 seg.***
+\newline
+
+	El resultado recién mostrado se consiguió a través de uno de los tests realizados en python. Si se llama al comando \textbf{make test} en uno de los tests se correra valgrind con el programa test\_shell, el cual utiliza las mismas funciones que el programa interprete salvo que lee la entrada de un archivo en vez de la entrada estándar.
+
+\section{Referencias}
+
+\bibitem{avl-insercion}
+Árbol AVL inserción:
+\url{https://www.geeksforgeeks.org/avl-tree-set-1-insertion/}
+
+\bibitem{avl-eliminacion}
+Árbol AVL eliminación:
+\url{https://www.geeksforgeeks.org/avl-tree-set-2-deletion/}
+
+\bibitem{avl-intervalo}
+Árbol AVL intervalos:
+\url{https://www.geeksforgeeks.org/interval-tree/}
+
+\end{document}

@@ -9,7 +9,7 @@ int intervalo_min(double x[2], double y[2]) {
 }
 
 void intervalo_imprimir(double intervalo[2]) {
-    printf("[%.2f, %.2f] ", intervalo[0], intervalo[1]);
+    printf("[%f, %f] ", intervalo[0], intervalo[1]);
 }
 
 int intervalo_es_valido(double intervalo[2]) {
@@ -22,3 +22,12 @@ int intervalo_es_valido(double intervalo[2]) {
 int intervalo_interseca(double x[2], double y[2]) {
     return x[0] <= y[1] && y[0] <= x[1];
 }
+
+int max_i(int a, int b) {
+    return a > b ? a : b;
+}
+
+double max_d(double a, double b) {
+    return a > b ? a : b;
+}
+

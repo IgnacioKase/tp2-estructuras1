@@ -1,4 +1,7 @@
 tests/test_cases
+test_cases/*.txt
+test_cases/
+test_cases
 
 # Prerequisites
 *.d

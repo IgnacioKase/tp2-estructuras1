@@ -16,7 +16,7 @@ typedef enum {
     DFS,
     BFS,
     SALIR,
-    PRINT2D,
+    IMPRIMIR2D,
     HELP
 } SimpleCommands;
 
@@ -27,8 +27,6 @@ typedef enum {
 } IntervalCommands;
 
 void help();
-
-void empty_stdin();
 
 int shell_simple_command(char comando[6], ITree itree);
 

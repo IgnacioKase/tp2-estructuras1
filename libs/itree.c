@@ -1,61 +1,5 @@
 #include "itree.h"
 
-int itree_balance(ITree it) {
-    if (it == NULL)
-        return 0;
-    return itree_altura(it->left) - itree_altura(it->right);
-}
-
-#define COUNT 10
-// Function to print binary tree in 2D
-// It does reverse inorder traversal
-void print2DUtil(ITree root, int space) {
-    // Base case
-    if (root == NULL)
-        return;
-
-    // Increase distance between levels
-    space += COUNT;
-
-    // Process right child first
-    print2DUtil(root->right, space);
-
-    // Print current node after space
-    // count
-    printf("\n");
-    for (int i = COUNT; i < space; i++)
-        printf(" ");
-    printf("[%.2f, %.2f] H: %d - MAX: %.2f\n", root->intervalo[0], root->intervalo[1], itree_balance(root), root->max);
-
-    // Process left child
-    print2DUtil(root->left, space);
-}
-
-// Wrapper over print2DUtil()
-void print2D(ITree root) {
-    // Pass initial space count as 0
-    print2DUtil(root, 0);
-}
-
-ITree insert_in_tree(ITree it, double a, double b) {
-    double *ar = malloc(sizeof(double) * 2);
-    ar[0] = a;
-    ar[1] = b;
-    printf("########\n");
-    print2D(it);
-    printf("########\n");
-    return itree_insertar(it, ar);
-}
-///////////////////////////////////////////
-
-int max_i(int a, int b) {
-    return a > b ? a : b;
-}
-
-double max_d(double a, double b) {
-    return a > b ? a : b;
-}
-
 ITree itree_crear() {
     return NULL;
 }
@@ -74,15 +18,44 @@ int itree_altura(ITree it) {
     return (1 + max_i(itree_altura(it->left), itree_altura(it->right)));
 }
 
+int itree_balance(ITree it) {
+    if (it == NULL)
+        return 0;
+    return itree_altura(it->left) - itree_altura(it->right);
+}
+
 /* Actualiza el maximo final de los intervalos
    en caso de insertar, rotar o eliminar
    (no se usa con intervalos vacios) */
-void itree_update_max(ITree it) {
+void itree_actualizar_max(ITree it) {
     it->max = it->intervalo[1];
     if (it->left != NULL)
         it->max = max_d(it->left->max, it->max);
     if (it->right != NULL)
         it->max = max_d(it->right->max, it->max);
+}
+
+// Función para imprimir un arbol binario en 2D
+// recorre el arbol en orden transversal inverso
+void itree_imprimir_2d_inner(ITree root, int space) {
+    if (root == NULL)
+        return;
+    space += PRINT_2D_SPACES;
+
+    itree_imprimir_2d_inner(root->right, space);
+
+    printf("\n");
+    for (int i = PRINT_2D_SPACES; i < space; i++)
+        printf(" ");
+
+    intervalo_imprimir(root->intervalo);
+    printf("\n");
+
+    itree_imprimir_2d_inner(root->left, space);
+}
+
+void itree_imprimir_2d(ITree root) {
+    itree_imprimir_2d_inner(root, 0);
 }
 
 // Funciones auxiliares al balanceo
@@ -93,8 +66,8 @@ ITree itree_rotar_der(ITree it) {
     left->right = it;
     it->left = lr;
 
-    itree_update_max(it);
-    itree_update_max(left);
+    itree_actualizar_max(it);
+    itree_actualizar_max(left);
 
     return left;
 }
@@ -106,8 +79,8 @@ ITree itree_rotar_izq(ITree it) {
     right->left = it;
     it->right = rl;
 
-    itree_update_max(it);
-    itree_update_max(right);
+    itree_actualizar_max(it);
+    itree_actualizar_max(right);
 
     return right;
 }
@@ -128,10 +101,10 @@ ITree itree_insertar(ITree it, double inter[2]) {
         /* el intervalo se inserta a la izquierda si el comienzo es menor
            o si es igual pero el final es menor */
         it->left = itree_insertar(it->left, inter);
-        itree_update_max(it);
+        itree_actualizar_max(it);
     } else if (intervalo_min(it->intervalo, inter)) {
         it->right = itree_insertar(it->right, inter);
-        itree_update_max(it);
+        itree_actualizar_max(it);
     } else  // si el intervalo ya existe, no se vuelve a insertar
         return it;
 
@@ -204,7 +177,7 @@ ITree itree_eliminar(ITree it, double inter[2]) {
             it->right = itree_eliminar(it->right, nuevo->intervalo);
             /* se vuelve a calcular el maximo
                en caso de que haya sido del intervalo eliminado */
-            itree_update_max(it);
+            itree_actualizar_max(it);
         }
     }
 

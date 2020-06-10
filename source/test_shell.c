@@ -4,7 +4,7 @@ int main(int argc, char const *argv[]) {
     //Checkeamos recibir los parametros correctamente
     if (argc != 2) {
         printf("---------------------------------------\n\n");
-        printf("ERROR: ingrese la cantidad de personas y la direccion de los archivos:\n\n");
+        printf("ERROR: ingrese el archivo de test:\n\n");
         printf("1 - Archivo de test (un comando por linea)\n");
         printf("Ejemplo:\n\n");
         printf("$ test_shell test_cases.txt\n\n");

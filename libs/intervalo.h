@@ -12,6 +12,8 @@ int intervalo_es_valido(double intervalo[2]);
 
 int intervalo_interseca(double x[2], double y[2]);
 
-int equal_double(double a, double b);
+int max_i(int a, int b);
+
+double max_d(double a, double b);
 
 #endif

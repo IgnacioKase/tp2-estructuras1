@@ -3,6 +3,11 @@ import sys
 import time
 import os
 import errno
+import random
+
+TEST_CASES_FOLDER = "tests/test_cases/"
+TEST_IN_PATH = TEST_CASES_FOLDER
+TEST_OUT_PATH = TEST_CASES_FOLDER + "out_"
 
 
 def insert(a, b):
@@ -31,7 +36,6 @@ def salir():
 
 def help():
     return "help\n"
-
 
 def print2D():
     return "print\n"
@@ -118,6 +122,71 @@ def test_dummy(file):
     fsalir(file)
 
 
+def test_negative(file):
+    max_number = 100
+    for x in range(0, max_number):
+        finsert(file, -1*x, -1*(x) + 1)
+    fprint2D(file)
+    fbfs(file)
+    fdfs(file)
+    fsalir(file)
+
+def test_real_number(file):
+    max_number = 10000
+    number = -100
+    for x in range(0, max_number):
+        finsert(file, number, number+0.1)
+        number += 0.1
+    fprint2D(file)
+    fbfs(file)
+    fdfs(file)
+    fsalir(file)
+
+def test_random_valid_numbers(file):
+    max_number = 10000
+    for x in range(0, max_number):
+        number = random.uniform(-100000, 100000)
+        finsert(file, number, number + random.uniform(0, 100000))
+    fprint2D(file)
+    fbfs(file)
+    fdfs(file)
+    fsalir(file)
+
+def test_random_numbers(file):
+    max_number = 10000
+    for x in range(0, max_number):
+        finsert(file, random.uniform(-100000, 100000), random.uniform(-100000, 100000))
+    fprint2D(file)
+    fbfs(file)
+    fdfs(file)
+    fsalir(file)
+
+def test_valgrind(file):
+    max_number = 10000
+    max_number_overlap = 1000
+    interval_to_delete = []
+    interval_to_overlap = []
+    for x in range(0, max_number):
+        x = random.uniform(-100000, 100000)
+        y = random.uniform(-100000, 100000)
+        finsert(file, x, y)
+        if x <= y and random.random() < 0.1:
+            interval_to_delete.append((x,y))
+        if x <= y and random.random() < 0.5:
+            interval_to_overlap.append((x,y))
+    
+    for interval in interval_to_delete:
+        fdelete(file, interval[0], interval[1])
+    for interval in interval_to_overlap:
+        foverlap(file, interval[0], interval[1])
+    for x in range(0, max_number_overlap):
+        foverlap(file, random.uniform(-100000, 100000), random.uniform(-100000, 100000))
+    
+    fprint2D(file)
+    fbfs(file)
+    fdfs(file)
+    fsalir(file)
+
 def open_safe(filename, mode, encoding):
     if not os.path.exists(os.path.dirname(filename)):
         try:
@@ -128,21 +197,27 @@ def open_safe(filename, mode, encoding):
     return open(filename, mode=mode, encoding=encoding)
 
 
-def test_template(PATH_TEST, PATH_STDOUT, test_func, OS):
+def test_template(test_func, valgrind,OS):
     test_shell = "./test_shell"
+    PATH_TEST = TEST_IN_PATH + test_func.__name__ + ".txt"
+    PATH_OUT = TEST_OUT_PATH + test_func.__name__ + ".txt"
     if OS == "WIN32":
         test_shell += ".exe"
+    if valgrind:
+        exec_list = ['valgrind', '-v', '--leak-check=full', '--show-reachable=yes', test_shell, PATH_TEST]
+    else:
+        exec_list = [test_shell, PATH_TEST]
     print("# Start test: %s" % test_func.__name__)
-
+    
     fTest = open_safe(PATH_TEST, mode="w+", encoding="utf-8")
     test_func(fTest)
     fTest.close()
 
     start = time.time()
-    response = check_output([test_shell, PATH_TEST])
+    response = check_output(exec_list)
     end = time.time()
 
-    fOut = open_safe(PATH_STDOUT, mode="w+", encoding="utf-8")
+    fOut = open_safe(PATH_OUT, mode="w+", encoding="utf-8")
     execution_time = "*** Execution time: %s seg.***\n\n" % (end - start)
     fOut.write(execution_time)
     print("# End test: %s\n%s" % (test_func.__name__, execution_time))
@@ -152,16 +227,20 @@ def test_template(PATH_TEST, PATH_STDOUT, test_func, OS):
 
 def main():
     test_list = [
-        ("test_cases/test_dummy.txt", "test_cases/out_test_dummy.txt", test_dummy),
-        ("test_cases/test_insert.txt", "test_cases/out_test_insert.txt", test_insert),
-        ("test_cases/test_delete.txt", "test_cases/out_test_delete.txt", test_delete),
-        ("test_cases/test_overlap.txt",
-         "test_cases/out_test_overlap.txt", test_overlap),
-        ("test_cases/test_size.txt", "test_cases/out_test_size.txt", test_size),
+        (test_dummy, False),
+        (test_insert, False),
+        (test_delete, False),
+        (test_overlap, False),
+        (test_negative, False),
+        (test_real_number, False),
+        (test_random_numbers, False),
+        (test_random_valid_numbers, False),
+        (test_valgrind, True),
+        (test_size, False),
     ]
     OS = sys.argv[1]
     for test in test_list:
-        test_template(test[0], test[1], test[2], OS)
+        test_template(test[0], test[1],OS)
 
 
 if __name__ == "__main__":
