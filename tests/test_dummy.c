@@ -1,5 +1,7 @@
 #include "../libs/itree.h"
 
+/* Crea un arreglo de doubles temporal
+   para insertar los valores en el arbol de intervalos */
 ITree insert_in_tree(ITree it, double a, double b) {
     double *ar = malloc(sizeof(double) * 2);
     ar[0] = a;
