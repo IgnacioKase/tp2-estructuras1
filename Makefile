@@ -2,7 +2,7 @@ INTERPRETE = interprete
 TEST_SHELL = test_shell
 TEST = test_dummy
 
-CFLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra -Werror -std=c99 -g
 OSFLAG 				:=
 ifeq ($(OS),Windows_NT)
 	OSFLAG +=WIN32
