@@ -2,6 +2,10 @@ tests/test_cases
 test_cases/*.txt
 test_cases/
 test_cases
+interprete
+test
+test_dummy
+test_shell
 
 # Prerequisites
 *.d
