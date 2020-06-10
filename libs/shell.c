@@ -110,6 +110,11 @@ ITree shell_interval_command(char comando[6], double* arg, ITree itree) {
     return itree;
 }
 
+/* Identifica el comando guardado en buf
+   (recibido por interprete o test_shell),
+   ejecuta la operacion (o el error) correspondiente
+   y retorna 0 si el comando indica salir del programa
+   o 1 en otro caso, y se usa en loop en los programas anteriores */
 int loop_shell(char buf[MAX_STDIN], ITree* itree) {
     int continuar = 1;
     char comando[MAX_STDIN];
