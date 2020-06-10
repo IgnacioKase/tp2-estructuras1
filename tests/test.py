@@ -10,29 +10,25 @@ TEST_IN_PATH = TEST_CASES_FOLDER
 TEST_OUT_PATH = TEST_CASES_FOLDER + "out_"
 TEST_OUT_INFO_PATH = TEST_CASES_FOLDER + "all_tests_info.txt"
 
+#Funciones que retornan lineas de comandos:
+
 def insert(a, b):
     return "i [%s,%s]\n" % (a, b)
-
 
 def delete(a, b):
     return "e [%s,%s]\n" % (a, b)
 
-
 def overlap(a, b):
     return "? [%s,%s]\n" % (a, b)
-
 
 def bfs():
     return "bfs\n"
 
-
 def dfs():
     return "dfs\n"
 
-
 def salir():
     return "salir\n"
-
 
 def help():
     return "help\n"
@@ -40,39 +36,35 @@ def help():
 def print2D():
     return "print\n"
 
+# Funciones que imprimen comandos en un archivo:
 
 def finsert(file, a, b):
     return file.write(insert(a, b))
 
-
 def fdelete(file, a, b):
     return file.write(delete(a, b))
-
 
 def foverlap(file, a, b):
     return file.write(overlap(a, b))
 
-
 def fbfs(file):
     return file.write(bfs())
-
 
 def fdfs(file):
     return file.write(dfs())
 
-
 def fsalir(file):
     return file.write(salir())
-
 
 def fhelp(file):
     return file.write(help())
 
-
 def fprint2D(file):
     return file.write(print2D())
 
+# Funciones de generacion de tests:
 
+# Arbol de 100k intervalos y recorrido bfs
 def test_size(file):
     max_number = 100000
     for x in range(0, max_number):
@@ -81,7 +73,8 @@ def test_size(file):
     fbfs(file)
     fsalir(file)
 
-
+# Insercion y eliminacion de 10k intervalos
+# y recorrido bfs
 def test_delete(file):
     max_number = 10000
     for x in range(0, max_number):
@@ -91,7 +84,8 @@ def test_delete(file):
     fbfs(file)
     fsalir(file)
 
-
+# Insercion de 10k intervalos,
+# recorridos e impresion 2d
 def test_insert(file):
     max_number = 10000
     for x in range(0, max_number):
@@ -101,7 +95,8 @@ def test_insert(file):
     fdfs(file)
     fsalir(file)
 
-
+# Insercion e interseccion de 100 intervalos,
+# y recorrido bfs
 def test_overlap(file):
     max_number = 100
     for x in range(0, max_number):
@@ -111,7 +106,7 @@ def test_overlap(file):
     fbfs(file)
     fsalir(file)
 
-
+# Arbol simple e impresion 2d
 def test_dummy(file):
     finsert(file, 1, 2)
     finsert(file, 2, 3)
@@ -121,7 +116,8 @@ def test_dummy(file):
     fprint2D(file)
     fsalir(file)
 
-
+# Insercion de 100 intervalos negativos,
+# recorridos e impresion 2d
 def test_negative(file):
     max_number = 100
     for x in range(0, max_number):
@@ -131,6 +127,8 @@ def test_negative(file):
     fdfs(file)
     fsalir(file)
 
+# Insercion de 10k intervalos reales [x,x+0.1]
+# desde -100, recorridos e impresion 2d
 def test_real_number(file):
     max_number = 10000
     number = -100
@@ -142,6 +140,8 @@ def test_real_number(file):
     fdfs(file)
     fsalir(file)
 
+# Insercion de 10k intervalos aleatorios,
+# recorridos e impresion 2d
 def test_random_valid_numbers(file):
     max_number = 10000
     for x in range(0, max_number):
@@ -152,6 +152,10 @@ def test_random_valid_numbers(file):
     fdfs(file)
     fsalir(file)
 
+# Intentos de insercion de 10k intervalos reales aleatorios
+# no necesariaente validos
+# (el extremo derecho puede ser menor al izquierdo),
+# recorridos e impresion 2d
 def test_random_numbers(file):
     max_number = 10000
     for x in range(0, max_number):
@@ -161,6 +165,8 @@ def test_random_numbers(file):
     fdfs(file)
     fsalir(file)
 
+# Testeo general de 10k intervalos
+# para chequear con valgrind
 def test_valgrind(file):
     max_number = 10000
     max_number_overlap = 1000
@@ -187,6 +193,7 @@ def test_valgrind(file):
     fdfs(file)
     fsalir(file)
 
+# Apertura segura de archivos
 def open_safe(filename, mode, encoding):
     if not os.path.exists(os.path.dirname(filename)):
         try:
@@ -196,7 +203,7 @@ def open_safe(filename, mode, encoding):
                 raise
     return open(filename, mode=mode, encoding=encoding)
 
-
+# Ejecuta y guarda en un archivo los resultados del test de la funcion recibida
 def test_template(test_func, valgrind, fInfo, OS):
     test_shell = "./test_shell"
     PATH_TEST = TEST_IN_PATH + test_func.__name__ + ".txt"
