@@ -239,8 +239,8 @@ def main():
         (test_real_number, False),
         (test_random_numbers, False),
         (test_random_valid_numbers, False),
-        # (test_valgrind, True),
-        # (test_size, False),
+        (test_valgrind, True),
+        (test_size, False),
     ]
     OS = sys.argv[1]
     repeat = int(sys.argv[2])
