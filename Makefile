@@ -1,23 +1,52 @@
 INTERPRETE = interprete
+INTERPRETE_SOURCE = source/interprete.c
+INTERPRETE_INCLUDE = itree.o intervalo.o cola.o shell.o
 TEST_SHELL = test_shell
-TEST = test_dummy
+TEST_SHELL_SOURCE = source/test_shell.c
+TEST_SHELL_INCLUDE = itree.o cola.o intervalo.o shell.o
+TEST_DUMMY = test_dummy
+TEST_DUMMY_SOURCE = tests/test_dummy.c
+TEST_DUMMY_INCLUDE = itree.o cola.o intervalo.o
+SHELL_LIB = libs/shell.c
+SHELL_LIB_INCLUDE = libs/shell.h itree.o intervalo.o cola.o
+ITREE = libs/itree.c
+ITREE_INCLUDE = libs/itree.h cola.o intervalo.o
+COLA = libs/cola.c
+COLA_INCLUDE = libs/cola.h
+INTERVALO = libs/intervalo.c
+INTERVALO_INCLUDE = libs/intervalo.h
+CFLAGS = -Wall -Wextra -Werror -std=c99 -g
+PYTHON_TEST = tests/test.py
+PYTHON_INTERPRETE = python
+PYTHON_INTERPRETE_LINUX = python3
+PYTHON_INTERPRETE_DARWIN = python3
+
 REPEAT = 1
 
-CFLAGS = -Wall -Wextra -Werror -std=c99 -g
 OSFLAG 				:=
 ifeq ($(OS),Windows_NT)
 	OSFLAG +=WIN32
 else
 	UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-		OSFLAG +=LINUX
+	OSFLAG +=LINUX
 endif
 ifeq ($(UNAME_S),Darwin)
-		OSFLAG +=OSX
+	OSFLAG +=OSX
 endif
 endif
 
 OSFLAG := $(firstword $(subst :, ,$(OSFLAG)))
+
+ifeq ($(OSFLAG), WIN32)
+PYTHON = $(PYTHON_INTERPRETE)
+endif
+ifeq ($(OSFLAG), LINUX)
+PYTHON = $(PYTHON_INTERPRETE_LINUX)
+endif
+ifeq ($(OSFLAG), OSX)
+PYTHON = $(PYTHON_INTERPRETE_DARWIN)
+endif
 
 all: interprete clean
 
@@ -27,37 +56,29 @@ test_shell: test_shell_comp clean
 
 test_dummy: test_dummy_comp clean
 
-interprete: source/interprete.c itree.o intervalo.o cola.o shell.o
-	gcc $(CFLAGS) -o $(INTERPRETE) source/interprete.c itree.o intervalo.o cola.o shell.o
+interprete: $(INTERPRETE_SOURCE) $(INTERPRETE_INCLUDE)
+	gcc $(CFLAGS) -o $(INTERPRETE) $(INTERPRETE_SOURCE) $(INTERPRETE_INCLUDE)
 
-test_shell_comp: source/test_shell.c itree.o cola.o intervalo.o cola.o shell.o
-	gcc $(CFLAGS) -o $(TEST_SHELL) source/test_shell.c itree.o cola.o intervalo.o shell.o
+test_shell_comp: $(TEST_SHELL_SOURCE) $(TEST_SHELL_INCLUDE)
+	gcc $(CFLAGS) -o $(TEST_SHELL) $(TEST_SHELL_SOURCE) $(TEST_SHELL_INCLUDE)
 
-test_dummy_comp: tests/test_dummy.c itree.o cola.o intervalo.o cola.o
-	gcc $(CFLAGS) -o $(TEST) tests/test_dummy.c itree.o cola.o intervalo.o
+test_dummy_comp: $(TEST_DUMMY_SOURCE) $(TEST_DUMMY_INCLUDE)
+	gcc $(CFLAGS) -o $(TEST_DUMMY) $(TEST_DUMMY_SOURCE) $(TEST_DUMMY_INCLUDE)
 
 unit_test_python:
-ifeq ($(OSFLAG), WIN32)
-	python tests/test.py $(OSFLAG) $(REPEAT)
-endif
-ifeq ($(OSFLAG), LINUX)
-	python3 tests/test.py $(OSFLAG) $(REPEAT)
-endif
-ifeq ($(OSFLAG), OSX)
-	python3 tests/test.py $(OSFLAG) $(REPEAT)
-endif
+	$(PYTHON) $(PYTHON_TEST) $(OSFLAG) $(REPEAT)
 
-shell.o: libs/shell.c libs/shell.h itree.o intervalo.o cola.o
-	gcc $(CFLAGS) -c libs/shell.c
+shell.o: $(SHELL_LIB) $(SHELL_LIB_INCLUDE)
+	gcc $(CFLAGS) -c $(SHELL_LIB)
 
-itree.o: libs/itree.c libs/itree.h cola.o intervalo.o
-	gcc $(CFLAGS) -c libs/itree.c
+itree.o: $(ITREE) $(ITREE_INCLUDE)
+	gcc $(CFLAGS) -c $(ITREE)
 
-cola.o: libs/cola.c libs/cola.h
-	gcc $(CFLAGS) -c libs/cola.c
+cola.o: $(COLA) $(COLA_INCLUDE)
+	gcc $(CFLAGS) -c $(COLA)
 
-intervalo.o: libs/intervalo.c libs/intervalo.h
-	gcc $(CFLAGS) -c libs/intervalo.c
+intervalo.o: $(INTERVALO) $(INTERVALO_INCLUDE)
+	gcc $(CFLAGS) -c $(INTERVALO)
 
 clean:
 ifeq ($(OSFLAG), WIN32)

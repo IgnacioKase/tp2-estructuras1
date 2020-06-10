@@ -30,7 +30,7 @@
 \begin{itemize}
 \item \textbf{libs}: librerias/headers utlizados, implementaciones de estructuras de datos, librerias de funciones de uso común del proyecto.
 \item \textbf{source}: código fuente de los dos programas principales del proyecto. El interprete y otro programa 'test\_shell' para debuggear el funcionamiento de este.
-\item  \textbf{tests}: saquí se encuentran dos programas, un test muy simple realizado en c, 'test\_dummy' y un programa realizado en python que testea la estructura de árbol en varios puntos utilizando el programa en c 'test\_shell'. Además, aquí se en test\_cases guardan los resultados de las test de python.
+\item  \textbf{tests}: aquí se encuentran dos programas, un test muy simple realizado en c, 'test\_dummy' y un programa realizado en python que testea la estructura de árbol en varios puntos utilizando el programa en c 'test\_shell'. Además, aquí se en test\_cases guardan los resultados de las test de python.
 \end{itemize}
 
 \section{Estructura de datos}
@@ -72,7 +72,7 @@
 \end{itemize}
 
 \newpage
-A continuación se muestran algunos resultados de medición de tiempo en los diferentes de tests. 
+A continuación se muestran algunos resultados de medición de tiempo en los diferentes de tests. La última línea es el promedio de los valores.
 \begin{adjustwidth}{-2.5 cm}{-2.5 cm}\centering\begin{threeparttable}[!htb]
 \caption{PC 1 (en segundos)}\label{tab: }
 \scriptsize
@@ -92,6 +92,7 @@ A continuación se muestran algunos resultados de medición de tiempo en los dif
 \bottomrule
 \end{tabular}
 .\end{threeparttable}\end{adjustwidth}
+\footnotesize *la última línea es el promedio de los valores.
 
 \begin{adjustwidth}{-2.5 cm}{-2.5 cm}\centering\begin{threeparttable}[!htb]
 \caption{PC 2 (en segundos)}\label{tab: }
@@ -112,6 +113,8 @@ A continuación se muestran algunos resultados de medición de tiempo en los dif
 \bottomrule
 \end{tabular}
 .\end{threeparttable}\end{adjustwidth}
+\footnotesize *la última línea es el promedio de los valores.
+
 \newpage
 \section{Makefile}
 	El archivo Makefile generado posee varias comandos, a continuación se detallan los mismos:
