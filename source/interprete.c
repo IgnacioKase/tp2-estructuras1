@@ -1,6 +1,19 @@
 #include "../libs/shell.h"
 
-// valgrind -v --leak-check=full --show-reachable=yes ./interprete
+/*
+ TRABAJO PRÁCTICO 2
+ ÁRBOL AVL DE INTERVALOS DOUBLE CON INTERPRETE
+ INTEGRANTES:
+       - VALENTINA, PRATO
+       - IGNACIO, KASEVICH
+ GIT: https://github.com/IgnacioKase/tp2-estructuras1
+ 10/06/2020
+*/
+
+/*
+ LEER PDFs/Informe.pdf
+*/
+
 
 int main() {
     printf("\nIngrese 'help' para informacion sobre los comandos\n");

@@ -7,6 +7,10 @@
 #include "cola.h"
 #include "intervalo.h"
 
+/*
+    Comentarios de las funciones en el archivo .c
+*/
+
 #define PRINT_2D_SPACES 8
 
 typedef void (*FuncionVisitante)(double *intervalo);

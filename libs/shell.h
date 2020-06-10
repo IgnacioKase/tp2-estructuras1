@@ -10,6 +10,11 @@
 #include "intervalo.h"
 #include "itree.h"
 
+/*
+    Comentarios de las funciones en el archivo .c
+*/
+
+
 #define MAX_STDIN 80
 
 typedef enum {

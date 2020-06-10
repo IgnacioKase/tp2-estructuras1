@@ -5,6 +5,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
+    Comentarios de las funciones en el archivo .c
+*/
+
 typedef struct _CNodo {
     void *dato;
     struct _CNodo *sig;

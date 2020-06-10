@@ -4,6 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
+    Comentarios de las funciones en el archivo .c
+*/
+
+
 int intervalo_min(double x[2], double y[2]);
 
 void intervalo_imprimir(double intervalo[2]);
