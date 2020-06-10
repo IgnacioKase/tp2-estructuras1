@@ -8,7 +8,7 @@ import random
 TEST_CASES_FOLDER = "tests/test_cases/"
 TEST_IN_PATH = TEST_CASES_FOLDER
 TEST_OUT_PATH = TEST_CASES_FOLDER + "out_"
-
+TEST_OUT_INFO_PATH = TEST_CASES_FOLDER + "all_tests_info.txt"
 
 def insert(a, b):
     return "i [%s,%s]\n" % (a, b)
@@ -197,7 +197,7 @@ def open_safe(filename, mode, encoding):
     return open(filename, mode=mode, encoding=encoding)
 
 
-def test_template(test_func, valgrind,OS):
+def test_template(test_func, valgrind, fInfo, OS):
     test_shell = "./test_shell"
     PATH_TEST = TEST_IN_PATH + test_func.__name__ + ".txt"
     PATH_OUT = TEST_OUT_PATH + test_func.__name__ + ".txt"
@@ -207,7 +207,9 @@ def test_template(test_func, valgrind,OS):
         exec_list = ['valgrind', '-v', '--leak-check=full', '--show-reachable=yes', test_shell, PATH_TEST]
     else:
         exec_list = [test_shell, PATH_TEST]
-    print("# Start test: %s" % test_func.__name__)
+    start_message = "# Start test: %s" % test_func.__name__
+    print(start_message)
+    fInfo.write(start_message + "\n")
     
     fTest = open_safe(PATH_TEST, mode="w+", encoding="utf-8")
     test_func(fTest)
@@ -220,7 +222,9 @@ def test_template(test_func, valgrind,OS):
     fOut = open_safe(PATH_OUT, mode="w+", encoding="utf-8")
     execution_time = "*** Execution time: %s seg.***\n\n" % (end - start)
     fOut.write(execution_time)
-    print("# End test: %s\n%s" % (test_func.__name__, execution_time))
+    end_message = "# End test: %s\n%s" % (test_func.__name__, execution_time)
+    print(end_message)
+    fInfo.write(end_message + "\n")
     fOut.write(response.decode())
     fOut.close()
 
@@ -235,12 +239,16 @@ def main():
         (test_real_number, False),
         (test_random_numbers, False),
         (test_random_valid_numbers, False),
-        (test_valgrind, True),
-        (test_size, False),
+        # (test_valgrind, True),
+        # (test_size, False),
     ]
     OS = sys.argv[1]
-    for test in test_list:
-        test_template(test[0], test[1],OS)
+    repeat = int(sys.argv[2])
+    fInfo = open_safe(TEST_OUT_INFO_PATH, mode="w+", encoding="utf-8")
+    for i in range(0, repeat):
+        for test in test_list:
+            test_template(test[0], test[1], fInfo, OS)
+    fInfo.close()
 
 
 if __name__ == "__main__":

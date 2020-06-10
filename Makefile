@@ -1,6 +1,7 @@
 INTERPRETE = interprete
 TEST_SHELL = test_shell
 TEST = test_dummy
+REPEAT = 1
 
 CFLAGS = -Wall -Wextra -Werror -std=c99 -g
 OSFLAG 				:=
@@ -37,13 +38,13 @@ test_dummy_comp: tests/test_dummy.c itree.o cola.o intervalo.o cola.o
 
 unit_test_python:
 ifeq ($(OSFLAG), WIN32)
-	python tests/test.py $(OSFLAG)
+	python tests/test.py $(OSFLAG) $(REPEAT)
 endif
 ifeq ($(OSFLAG), LINUX)
-	python3 tests/test.py $(OSFLAG)
+	python3 tests/test.py $(OSFLAG) $(REPEAT)
 endif
 ifeq ($(OSFLAG), OSX)
-	python3 tests/test.py $(OSFLAG)
+	python3 tests/test.py $(OSFLAG) $(REPEAT)
 endif
 
 shell.o: libs/shell.c libs/shell.h itree.o intervalo.o cola.o
