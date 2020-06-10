@@ -4,6 +4,10 @@
 \usepackage{listings}
 \usepackage[utf8]{inputenc}
 \usepackage{hyperref, tabulary, array, }
+\usepackage{booktabs, multirow} % for borders and merged ranges
+\usepackage{soul}% for underlines
+\usepackage[table]{xcolor} % for cell colors
+\usepackage{changepage,threeparttable} % for wide tables
 
 \title{Trabajo Práctico II - Estructuras de datos y algortimos 1}
 \author{Valentina Prato - Ignacio Kasevich }
@@ -26,7 +30,7 @@
 \begin{itemize}
 \item \textbf{libs}: librerias/headers utlizados, implementaciones de estructuras de datos, librerias de funciones de uso común del proyecto.
 \item \textbf{source}: código fuente de los dos programas principales del proyecto. El interprete y otro programa 'test\_shell' para debuggear el funcionamiento de este.
-\item  \textbf{tests}: saquí se encuentran dos programas, un test muy simple realizado en c, 'test\_dummy' y un programa realizado en python que testea la estructura de árbol en varios puntos utilizando el programa en c 'test\_shell'. Además, aquí se en test\_casesguardan los resultados de las test de python.
+\item  \textbf{tests}: saquí se encuentran dos programas, un test muy simple realizado en c, 'test\_dummy' y un programa realizado en python que testea la estructura de árbol en varios puntos utilizando el programa en c 'test\_shell'. Además, aquí se en test\_cases guardan los resultados de las test de python.
 \end{itemize}
 
 \section{Estructura de datos}
@@ -44,6 +48,71 @@
     Partiendo entonces del programa test\_shell realizado en c, en python tendríamos una herramienta para correr los tests. Se diseñaron así numerosos tests de inserción, eliminación, intersección, intervalos con números positivos, negativos, chicos, grandes, aleatorios y tamaños muy grandes (100.000 nodos) de árboles. Además, uno de los tests mas útiles, es el test de valgrind, se corre un test pseudo aleatorio, donde hay muchas eliminaciones, inserciones, intersecciones e impresiones y este se hace a través del programa de valgrind, checkando asi que no haya leaks de memoria. A cada uno de estos tests se les tomo el tiempo de ejecución para tener un estimativo de eficacia de la estructura y como los distintos cambios afectaban a la estructura. Como punto negativo en este apartado, es que no se realizaron las comprobaciones de estos tests de forma programada, si no que se comprobaban 'a mano'. Esto resultó asi principalmente por una cuestión de tiempo.
     Aun con este problema, esta implementación de tests logró encontrar varios errores y problemas en la estructura, por lo cuál si bien no fue la mejor implementación, cumplió bien su función.
     
+\subsection{Resultados de tiempos}
+	Los 10 test escritos en python se corrieron 10 veces en 2 máquinas distintas. Antes de ver las tablas de los resultados, veremos un resumen de lo que hace cada tests y de las computadoras donde se corrieron.
+    
+\subsection{Tests:}
+\begin{itemize}
+\item \textbf{dummy}: el test mas simple donde se insertan 5 intervalos y se imprime el resultado en '2D'.
+\item \textbf{insert}: se insertan 10000 intervalos enteros de la forma [x, x+1] y se imprime el resultado en '2D' y recorriendo el árbol por BFS y DFS.
+\item \textbf{delete}: se insertan 10000 intervalos enteros de la forma [x, x+1], luego se eliminan estos mismos intervalos y se imprime el resultado en '2D' y recorriendo el árbol por BFS y DFS.
+\item \textbf{overlap:} se insertan 100 intervalos enteros de la forma [x, x+1], luego se pregunta la intersección por estos mismos intervalos y se imprime el resultado recorriendo el árbol por BFS.
+\item \textbf{negative:} se insertan 100 intervalos enteros de la forma [-1*x, -1*x + 1] (x > 0),  y se imprime el resultado en '2D' y recorriendo el árbol por BFS y DFS.
+\item \textbf{real number:}  se insertan 10000 intervalos de la forma [x, x+0.1] (x entero) y se imprime el resultado en '2D' y recorriendo el árbol por BFS y DFS.
+\item \textbf{rand number}: se insertan 10000 intervalos aleatorios (reales) no necesariamente válidos y se imprime el resultado en '2D' y recorriendo el árbol por BFS y DFS.
+\item \textbf{rand v. number} se insertan 10000 intervalos válidos aleatorios (reales) y se imprime el resultado en '2D' y recorriendo el árbol por BFS y DFS.
+\item \textbf{valgrind}: testeo general con 10000 intervalos aleatorios reales, inserta, elimina e interseca intervalos de forma aleatoria  y se imprime el resultado en '2D' y recorriendo el árbol por BFS y DFS. Todo este proceso se corre a través de valgrind el cual imprime por consola el resultado (sólo se incluyo uno de los resultados en el apartado 'Detalle de Valgrind' pero todos los tests corrieron sin leaks).
+\item \textbf{size}: se insertan 100000 intervalos enteros de la forma [x, x+1] y se imprime el resultado recorriendo el árbol por BFS.
+\end{itemize}
+
+\subsection{Computadoras:}
+\begin{itemize}
+\item \textbf{PC 1}: i7 4790k @4.00GHz - 16GB de ram @ 1333MHz - SSD (Linux)
+\item \textbf{PC 2}: i3 - 8 GB de Ram  (Linux)
+\end{itemize}
+
+\newpage
+A continuación se muestran algunos resultados de medición de tiempo en los diferentes de tests. 
+\begin{adjustwidth}{-2.5 cm}{-2.5 cm}\centering\begin{threeparttable}[!htb]
+\caption{PC 1 (en segundos)}\label{tab: }
+\scriptsize
+\begin{tabular}{lrrrrrrrrrr}\toprule
+\textbf{dummy} &\textbf{insert} &\textbf{delete} &\textbf{overlap} &\textbf{negative} &\textbf{real number} &\textbf{rand number} &\textbf{rand v. number} &\textbf{valgrind} &\textbf{size} \\\cmidrule{1-10}
+0.0010 &0.6677 &1.0465 &0.0012 &0.0010 &0.6573 &0.2150 &1.0403 &7.5898 &76.5525 \\\cmidrule{1-10}
+0.0012 &0.6520 &1.0121 &0.0014 &0.0015 &0.6627 &0.2206 &0.9904 &7.3972 &76.6895 \\\cmidrule{1-10}
+0.0012 &0.6516 &1.0154 &0.0014 &0.0015 &0.6614 &0.2192 &0.9952 &7.3026 &76.8492 \\\cmidrule{1-10}
+0.0011 &0.6533 &1.0276 &0.0012 &0.0013 &0.6650 &0.2324 &1.0194 &7.1889 &76.4803 \\\cmidrule{1-10}
+0.0011 &0.6554 &1.0143 &0.0013 &0.0013 &0.6530 &0.2216 &0.9776 &7.5558 &75.9139 \\\cmidrule{1-10}
+0.0011 &0.6464 &1.0217 &0.0014 &0.0014 &0.6596 &0.2199 &0.9986 &7.2587 &76.1080 \\\cmidrule{1-10}
+0.0012 &0.6585 &1.0190 &0.0015 &0.0014 &0.6620 &0.2221 &1.0106 &7.3668 &77.1468 \\\cmidrule{1-10}
+0.0013 &0.6500 &1.0109 &0.0013 &0.0014 &0.6588 &0.2259 &0.9890 &7.4477 &75.8933 \\\cmidrule{1-10}
+0.0011 &0.6543 &1.0142 &0.0013 &0.0013 &0.6532 &0.2303 &0.9954 &7.3635 &76.6960 \\\midrule
+0.0012 &0.6525 &1.0240 &0.0014 &0.0013 &0.6628 &0.2215 &0.9836 &7.2285 &76.6826 \\
+\textbf{0.0011} &\textbf{0.6542} &\textbf{1.0206} &\textbf{0.0013} &\textbf{0.0013} &\textbf{0.6596} &\textbf{0.2228} &\textbf{1.0000} &\textbf{7.3699} &\textbf{76.5012} \\
+\bottomrule
+\end{tabular}
+.\end{threeparttable}\end{adjustwidth}
+
+\begin{adjustwidth}{-2.5 cm}{-2.5 cm}\centering\begin{threeparttable}[!htb]
+\caption{PC 2 (en segundos)}\label{tab: }
+\scriptsize
+\begin{tabular}{lrrrrrrrrrr}\toprule
+\textbf{dummy} &\textbf{insert} &\textbf{delete} &\textbf{overlap} &\textbf{negative} &\textbf{real number} &\textbf{rand number} &\textbf{rand v. number} &\textbf{valgrind} &\textbf{size} \\\cmidrule{1-10}
+0.0013 &1.1442 &1.8102 &0.0015 &0.0016 &1.1476 &0.4177 &1.8244 &13.1444 &158.9486 \\\cmidrule{1-10}
+0.0013 &1.1469 &1.8202 &0.0015 &0.0015 &1.1406 &0.4220 &1.8543 &13.0886 &160.1213 \\\cmidrule{1-10}
+0.0012 &1.1331 &1.8132 &0.0015 &0.0015 &1.1453 &0.4090 &1.8361 &12.5926 &160.9481 \\\cmidrule{1-10}
+0.0012 &1.1408 &1.8138 &0.0015 &0.0016 &1.1422 &0.4213 &1.8444 &12.6327 &157.8776 \\\cmidrule{1-10}
+0.0012 &1.1420 &1.8044 &0.0015 &0.0016 &1.1480 &0.4168 &1.8410 &12.8447 &159.0193 \\\cmidrule{1-10}
+0.0012 &1.1246 &1.8033 &0.0016 &0.0016 &1.1462 &0.4191 &1.8214 &13.3749 &159.6415 \\\cmidrule{1-10}
+0.0012 &1.1331 &1.8013 &0.0015 &0.0016 &1.1507 &0.3996 &1.8389 &13.1698 &159.8144 \\\cmidrule{1-10}
+0.0012 &1.1482 &1.8160 &0.0015 &0.0016 &1.1465 &0.4144 &1.8157 &12.9019 &159.6480 \\\cmidrule{1-10}
+0.0012 &1.1383 &1.8085 &0.0015 &0.0016 &1.1402 &0.4193 &1.8146 &12.9590 &159.3566 \\\midrule
+0.0012 &1.1334 &1.8101 &0.0015 &0.0015 &1.1556 &0.4053 &1.8035 &12.7743 &162.6823 \\
+\textbf{0.0012} &\textbf{1.1385} &\textbf{1.8101} &\textbf{0.0015} &\textbf{0.0016} &\textbf{1.1463} &\textbf{0.4144} &\textbf{1.8294} &\textbf{12.9483} &\textbf{159.8058}  \\
+\bottomrule
+\end{tabular}
+.\end{threeparttable}\end{adjustwidth}
+\newpage
 \section{Makefile}
 	El archivo Makefile generado posee varias comandos, a continuación se detallan los mismos:
     
