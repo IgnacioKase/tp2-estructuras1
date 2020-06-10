@@ -1,9 +1,12 @@
 #include "itree.h"
+#include <assert.h>
 
+// Crea un arbol de intervalos vacio
 ITree itree_crear() {
     return NULL;
 }
 
+// Libera un arbol de intervalos
 void itree_destruir(ITree it) {
     if (it == NULL)
         return;
@@ -12,12 +15,15 @@ void itree_destruir(ITree it) {
     free(it);
 }
 
+// Calcula la altura del arbol
 int itree_altura(ITree it) {
     if (it == NULL)
         return -1;
     return (1 + max_i(itree_altura(it->left), itree_altura(it->right)));
 }
 
+/* Calcula la diferencia de altura
+   entre los hijos del arbol (si tiene) */
 int itree_balance(ITree it) {
     if (it == NULL)
         return 0;
@@ -28,6 +34,7 @@ int itree_balance(ITree it) {
    en caso de insertar, rotar o eliminar
    (no se usa con intervalos vacios) */
 void itree_actualizar_max(ITree it) {
+    assert(it != NULL);
     it->max = it->intervalo[1];
     if (it->left != NULL)
         it->max = max_d(it->left->max, it->max);
@@ -35,8 +42,8 @@ void itree_actualizar_max(ITree it) {
         it->max = max_d(it->right->max, it->max);
 }
 
-// Función para imprimir un arbol binario en 2D
-// recorre el arbol en orden transversal inverso
+/* Función para imprimir un arbol binario en 2D
+   recorre el arbol en orden transversal inverso */
 void itree_imprimir_2d_inner(ITree root, int space) {
     if (root == NULL)
         return;
@@ -54,11 +61,16 @@ void itree_imprimir_2d_inner(ITree root, int space) {
     itree_imprimir_2d_inner(root->left, space);
 }
 
+// Funcion base de la impresion 2d
 void itree_imprimir_2d(ITree root) {
+    // Se inicia la cantidad de espacios en 0
     itree_imprimir_2d_inner(root, 0);
 }
 
 // Funciones auxiliares al balanceo
+
+/* Rota el arbol hacia la derecha
+   y actualiza los maximos */
 ITree itree_rotar_der(ITree it) {
     ITree left = it->left;
     ITree lr = left->right;
@@ -72,6 +84,8 @@ ITree itree_rotar_der(ITree it) {
     return left;
 }
 
+/* Rota el arbol hacia la izquierda
+   y actualiza los maximos */
 ITree itree_rotar_izq(ITree it) {
     ITree right = it->right;
     ITree rl = right->left;
@@ -85,7 +99,7 @@ ITree itree_rotar_izq(ITree it) {
     return right;
 }
 
-// Inserta un intervalo en un arbol
+// Inserta un intervalo en el arbol
 ITree itree_insertar(ITree it, double inter[2]) {
     if (it == NULL) {
         ITree nodo = malloc(sizeof(ITNodo));
